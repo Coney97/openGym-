@@ -57,6 +57,8 @@ function cachedDefaultLang() {
  * stands in for it; with none seen yet the copy's stored language is used unchanged.
  */
 export function effectiveLang(S, config, navLangs = browserLangs()) {
+  // The dedicated Simplified Chinese Android build always uses its Chinese pack.
+  if (import.meta.env.VITE_ZH_CN_EDITION === '1') return 'zh'
   const own = (S && typeof S.lang === 'string' && S.lang) || 'en'
   if (!S || S.langAuto !== true) return own
   let cfg = config

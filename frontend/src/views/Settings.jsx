@@ -849,15 +849,15 @@ export default function Settings({ page = null, find = null, via = null, entryKe
 
     units: () => <>
       <Section>
-        <SelectRow
+        {import.meta.env.VITE_ZH_CN_EDITION !== '1' && <SelectRow
           icon="globe" iconTint="var(--blue)" title={t('Language')}
           value={lang} onChange={v => update(s => { s.lang = v; s.langAuto = false })}
           options={Object.entries(LANGS).map(([k, name]) => ({
             value: k, label: name,
             subtitle: INSTR_LANGS.includes(k) ? null : t("Exercise instructions aren't translated into this language yet, so they stay in English."),
           }))}
-        />
-        {ctx.nameLang && <>
+        />}
+        {ctx.nameLang && import.meta.env.VITE_ZH_CN_EDITION !== '1' && <>
           <Row icon="globe" iconTint="var(--purple)" title={t('English exercise names')}
             subtitle={t('Show the English name in parentheses next to the translated one.')}>
             <Switch checked={S.enParens?.[baseLang(lang)] ?? true}
