@@ -4,10 +4,13 @@
 //
 // A routine is [key, name, emoji, [[exerciseId, sets, reps], …]]. The key is what a plan's
 // schedule points at, so a weekday never depends on the position of a routine in the array.
-// Names stay canonical English — they become ordinary user routines, which are not translated.
+// Translate names only when creating a new Chinese-edition plan; existing user routines keep
+// their saved names, including anything imported from a backup.
 import { uid } from './format.js'
 import { EXIDX } from './exercises.js'
 import { eqAvailable, ALL_EQUIPMENT } from './equipment.js'
+import { t } from './i18n-core.js'
+import { CHINESE_EDITION } from './chinese-edition.js'
 
 const PPL = [
   ['push', 'Push Day', 'barbell', [['0025', 4, 8], ['0047', 3, 10], ['0426', 3, 10], ['0334', 3, 12], ['0241', 3, 12], ['0251', 3, 10]]],
@@ -44,7 +47,7 @@ const PLANS = {
 }
 
 const build = routines =>
-  routines.map(([, name, emoji, list]) => ({ id: uid(), name, emoji, ex: list.map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 })) }))
+  routines.map(([, name, emoji, list]) => ({ id: uid(), name: CHINESE_EDITION ? t(name) : name, emoji, ex: list.map(([id, sets, reps]) => ({ id, sets, reps, weight: 0 })) }))
 
 // Fresh routine objects (new ids) — [push, pull, legs]. The demo build seeds a history on
 // top of exactly these three, so this entry point keeps its shape.

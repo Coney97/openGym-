@@ -53,7 +53,7 @@ final class WidgetContent {
 
     private static String label(JSONObject labels, String key, String fallback) {
         String s = labels == null ? null : labels.optString(key, null);
-        return s == null || s.isEmpty() ? fallback : s;
+        return s == null || s.isEmpty() ? NativeWords.get(fallback) : s;
     }
 
     private static String str(JSONObject o, String key) {

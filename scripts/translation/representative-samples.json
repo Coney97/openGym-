@@ -1,0 +1,66 @@
+[
+  {
+    "id": "0667",
+    "category": "unilateral",
+    "fields": {
+      "description": {
+        "source_hash": "842eaa036e64df439ab37f2e067d6c3f4bdd29a216369b64d310e2b997011266",
+        "reviewed_target_hash": "40f389950d815f96ef83b851f082fbe1a83ca50a0f8932045911fe4631f48078",
+        "review_focus": "原文是单腿抬起的俯卧撑，不是单腿下蹲；保留胸、肩及核心稳定性三个要点。"
+      },
+      "instructions": {
+        "source_hash": "6db1b8362c28cf971c5ced58a2b55742bdf0e205ab097f0e79f544f2561f19c5",
+        "reviewed_target_hash": "91f9483109969022fa83bd557a017ef6ad00603b4341c470e570c1f3b2ef6ef2",
+        "review_focus": "逐项核对6步，保留抬腿、下放胸部、撑起时髋部不旋转和身体成直线；原文 every set 表示每组换腿，不是每次重复换腿。"
+      }
+    }
+  },
+  {
+    "id": "0043",
+    "category": "loaded",
+    "fields": {
+      "description": {
+        "source_hash": "df165ebf8d6ab69bf8ecb1e97536d04422da59783bbc7b3f5111ee4f0ddf0298",
+        "reviewed_target_hash": "731d2444f3f0a09314f5775cb555cdc1a19f39d09e4225691548ba8c73b69618",
+        "review_focus": "对照原文：deep back squat 是背杠深蹲，负重位于上背部，主要肌群是股四头肌与臀肌；没有新增次数或重量。"
+      },
+      "instructions": {
+        "source_hash": "9aef81ef4ead704bf9ea2a0f59311ac6f494e0418f25ceff627f30ab9c8e70b4",
+        "reviewed_target_hash": "01848ea24c98911ad8d29f9e39668fde4f8f86841fa10243f2949dd17122c341",
+        "review_focus": "逐步核对8步：上背杠位、核心稳定、屈髋屈膝、深度、膝脚方向及脚跟发力均与原文对应；将“伸展臀部”等字面表达纠正为伸髋，不改变内部负重或次数。"
+      }
+    }
+  },
+  {
+    "id": "0463",
+    "category": "static_hold",
+    "fields": {
+      "description": {
+        "source_hash": "67b172244eea091756ce97f8888ed88339df2f007aa3e6e81ad05c35e94b5091",
+        "reviewed_target_hash": "6235c75fc720c21f17c54c79d8d42178aeed4834bd4a303b542bcc7da8e07a53",
+        "review_focus": "原文 forearm plank 明确前臂支撑；直线范围从头至脚跟，训练目标为核心耐力及稳定性，没有新增动作条件。"
+      },
+      "instructions": {
+        "source_hash": "7898350b3700bbe06941e868ff27963a707c25e0c40ee5f5884eb63c10a59960",
+        "reviewed_target_hash": "b1a364372a030fca97317b41d4d35fb02a178859a35f48cd4bc9bd1f7996b194",
+        "review_focus": "核对6步：俯卧而非仰卧、前臂与脚尖支撑、肘位、全身直线、腹臀收紧及塌腰/撅臀警示均保留；时间严格保留20-60秒。"
+      }
+    }
+  },
+  {
+    "id": "0250",
+    "category": "stretch",
+    "fields": {
+      "description": {
+        "source_hash": "867789b93b39e9b7209b8b80be6b940ca72a6a90de16c3efa291301a61b5bd63",
+        "reviewed_target_hash": "1bca7c25bc642365cce871d381ffc2226ddbede8044cf849024c3d60260f7aa5",
+        "review_focus": "原文 gentle 为轻柔，头部后仰看天花板，拉伸部位是颈部前侧；未增加幅度或疼痛耐受要求。"
+      },
+      "instructions": {
+        "source_hash": "30cace15b59cded24cbb3debd4dcfaa11f7554c8a125d08ef51f0b32d41ffef7",
+        "reviewed_target_hash": "3c7dc4038004363591e9e4350e492ecc342d2dfb4866ed1c02ef6e994991253a",
+        "review_focus": "逐项对照6步，保留坐/站均可、肩部放松、缓慢后仰、轻张嘴放松下颌、颈前拉伸与缓慢回中立位；时间保留15-20秒。"
+      }
+    }
+  }
+]

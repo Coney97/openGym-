@@ -2,6 +2,10 @@ package ch.duartesantos.opengym;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
+import android.os.Build;
 import androidx.core.content.FileProvider;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -33,30 +37,47 @@ public class InstallPlugin extends Plugin {
     public void installApk(PluginCall call) {
         String fileName = call.getString("fileName");
         if (!UpdateFile.nameOk(fileName)) {
-            call.reject("not an update file name");
+            call.reject(NativeWords.get("not an update file name"));
             return;
         }
         String expected = call.getString("sha256");
         if (!UpdateFile.hashOk(expected)) {
-            call.reject("sha256 is required");
+            call.reject(NativeWords.get("sha256 is required"));
             return;
         }
 
         File file = new File(getContext().getCacheDir(), fileName);
         if (!file.exists()) {
-            call.reject("APK file not found: " + fileName);
+            call.reject(NativeWords.get("APK file not found"));
             return;
         }
 
         try {
             if (!expected.equalsIgnoreCase(sha256(file))) {
                 file.delete();
-                call.reject("SHA-256 mismatch: the download may be corrupted or tampered with");
+                call.reject(NativeWords.get("SHA-256 mismatch: the download may be corrupted or tampered with"));
                 return;
             }
         } catch (Exception e) {
-            call.reject("Could not check the download: " + e.getMessage());
+            call.reject(NativeWords.get("Could not check the download"));
             return;
+        }
+
+        if (BuildConfig.CHINESE_EDITION) {
+            try {
+                PackageManager manager = getContext().getPackageManager();
+                int flags = Build.VERSION.SDK_INT >= 28 ? PackageManager.GET_SIGNING_CERTIFICATES : PackageManager.GET_SIGNATURES;
+                PackageInfo installed = manager.getPackageInfo(getContext().getPackageName(), flags);
+                PackageInfo candidate = manager.getPackageArchiveInfo(file.getAbsolutePath(), flags);
+                if (candidate == null || !UpdateIdentity.valid(installed.packageName, version(installed), signers(installed),
+                        candidate.packageName, version(candidate), signers(candidate))) {
+                    call.reject(NativeWords.get("Update package identity, signature or version is invalid"));
+                    return;
+                }
+            } catch (Exception e) {
+                call.reject(NativeWords.get("Could not verify update identity"));
+                return;
+            }
         }
 
         Uri uri = FileProvider.getUriForFile(
@@ -82,5 +103,18 @@ public class InstallPlugin extends Plugin {
         StringBuilder hex = new StringBuilder();
         for (byte b : md.digest()) hex.append(String.format("%02x", b));
         return hex.toString();
+    }
+
+    private static long version(PackageInfo info) {
+        return Build.VERSION.SDK_INT >= 28 ? info.getLongVersionCode() : info.versionCode;
+    }
+
+    private static byte[][] signers(PackageInfo info) {
+        Signature[] signatures = Build.VERSION.SDK_INT >= 28
+                ? (info.signingInfo == null ? null : info.signingInfo.getApkContentsSigners()) : info.signatures;
+        if (signatures == null) return null;
+        byte[][] result = new byte[signatures.length][];
+        for (int i = 0; i < signatures.length; i++) result[i] = signatures[i].toByteArray();
+        return result;
     }
 }

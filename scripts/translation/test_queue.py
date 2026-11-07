@@ -179,6 +179,89 @@ m.run(q,Backend())
         with self.assertRaises(ValueError):
             module.Queue(self.root.parent, self.state)
 
+    def test_bulk_review_rolls_back_on_stale_item(self):
+        first = self.generated()
+        second = self.generated('0001:name', '测试深蹲')
+        def decision(row):
+            return {'key': row['key'], 'source_hash': row['hash'], 'target_hash': module.digest(json.loads(row['target'])),
+                    'decision': 'approve', 'reviewer': 'fixture reviewer', 'note': 'Checked fixture meaning'}
+        reviews = [decision(first), {**decision(second), 'target_hash': 'stale'}]
+        with self.assertRaises(ValueError):
+            self.q.review_batch(reviews)
+        self.assertEqual(self.q.report()['counts']['generated'], 2)
+        self.assertEqual(self.q.db.execute("SELECT COUNT(*) FROM events WHERE event='review'").fetchone()[0], 0)
+        with self.assertRaises(ValueError):
+            self.q.review_batch([decision(first)] * 101)
+
+    def test_source_conflict_cannot_be_cleared_by_translating_or_approving(self):
+        row = self.generated()
+        self.q.db.execute("UPDATE tasks SET status='blocked',error='conflicting-source-posture' WHERE key=?", (row['key'],))
+        self.q.db.commit()
+        with self.assertRaises(ValueError):
+            self.approve(row)
+        with self.assertRaises(ValueError):
+            self.q.import_candidates([{'key': row['key'], 'source_hash': row['hash'], 'target': '另一份译文。'}])
+        self.exercise['description'] = 'Corrected English source.'
+        self.file.write_text(json.dumps(self.exercise))
+        self.q.scan()
+        updated = self.q.db.execute('SELECT * FROM tasks WHERE key=?', (row['key'],)).fetchone()
+        self.assertIsNone(updated['error'])
+
+    def test_known_source_conflict_is_detected_without_prior_database_history(self):
+        original = module.ROOT / 'catalogue/exercises/0240.json'
+        fixture = json.loads(original.read_text())
+        path = self.root / 'catalogue/exercises/0240.json'
+        path.write_text(json.dumps(fixture))
+        restored = module.Queue(self.root, self.state.parent / 'restored')
+        restored.scan()
+        row = restored.db.execute("SELECT * FROM tasks WHERE key='0240:instructions'").fetchone()
+        self.assertEqual(row['status'], 'blocked')
+        fixture['name'] = 'corrected prone reverse fly'
+        path.write_text(json.dumps(fixture))
+        restored.scan()
+        row = restored.db.execute("SELECT * FROM tasks WHERE key='0240:instructions'").fetchone()
+        self.assertEqual(row['status'], 'pending')
+        self.assertIsNone(row['error'])
+        restored.db.close()
+
+    def test_native_fallback_review_rewrites_only_the_chinese_display_value(self):
+        native = self.root / 'frontend/android/app/src/main/java/ch/duartesantos/opengym/NativeWords.java'
+        native.parent.mkdir(parents=True)
+        native.write_text('class NativeWords { String get(String text) { switch(text) { case "No voice": return "无声音"; default: return text; } } }')
+        self.q.scan()
+        key = 'native_fallback:' + module.digest('No voice')
+        row = self.q.db.execute('SELECT * FROM tasks WHERE key=?', (key,)).fetchone()
+        self.q.import_candidates([{'key': key, 'source_hash': row['hash'], 'target': '没有可用的语音'}])
+        self.approve(self.q.db.execute('SELECT * FROM tasks WHERE key=?', (key,)).fetchone())
+        self.assertEqual(self.q.apply(), 1)
+        self.assertIn('case "No voice": return "没有可用的语音";', native.read_text())
+        self.assertIn('default: return text;', native.read_text())
+        self.q.scan()
+        self.assertEqual(self.q.db.execute('SELECT status FROM tasks WHERE key=?', (key,)).fetchone()[0], 'applied')
+
+    def test_ui_and_native_use_same_review_and_conflict_rules(self):
+        locale = self.root / 'frontend/src/locales/zh.js'
+        locale.parent.mkdir(parents=True)
+        locale.write_text('// preserve this comment\nexport default {"Hello": "你好", "Other": "其他"}\n')
+        source = self.root / 'frontend/android/app/src/main/res/values/strings.xml'
+        source.parent.mkdir(parents=True)
+        source.write_text('<resources><string name="hint">"Hold for 20 seconds."</string></resources>')
+        self.q.scan()
+        ui_key = 'ui:' + module.digest('Hello')
+        ui = self.q.db.execute('SELECT * FROM tasks WHERE key=?', (ui_key,)).fetchone()
+        native = self.q.db.execute("SELECT * FROM tasks WHERE key='native:hint'").fetchone()
+        self.q.import_candidates([
+            {'key': ui_key, 'source_hash': ui['hash'], 'target': '您好'},
+            {'key': 'native:hint', 'source_hash': native['hash'], 'target': '保持20秒。'}])
+        for key in [ui_key, 'native:hint']:
+            self.approve(self.q.db.execute('SELECT * FROM tasks WHERE key=?', (key,)).fetchone())
+        self.assertEqual(self.q.apply(), 2)
+        self.assertIn('// preserve this comment', locale.read_text())
+        self.assertIn('"Other": "其他"', locale.read_text())
+        self.assertIn('您好', locale.read_text())
+        self.q.scan()
+        self.assertEqual(self.q.db.execute("SELECT status FROM tasks WHERE key='native:hint'").fetchone()[0], 'applied')
+
 
 if __name__ == '__main__':
     unittest.main()

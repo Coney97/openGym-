@@ -1,0 +1,10 @@
+{
+  "0240:instructions": {
+    "context_hash": "9153af9edea938d72844ee2f2b462d7f368967a093b7163e6d996b8c393b95c5",
+    "reason": "英文名称 cable supine reverse fly 指定仰卧，步骤首句却要求 lie face down（俯卧）。需核实源数据后再定稿，不能仅改译文解除。"
+  },
+  "0059:instructions": {
+    "context_hash": "2dbdb0f832eac8341b83e09c83d64b509b3445da3f8e7128717cd9d7a3a8276b",
+    "reason": "英文名称及介绍指定卧姿托臂弯举，但步骤首句写坐在牧师凳上。旧中文第2步还把 weights 误作哑铃；须核实源姿势后整体定稿，不能以名称审核代替步骤审核。"
+  }
+}

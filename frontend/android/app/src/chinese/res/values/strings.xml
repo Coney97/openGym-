@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+  <string name="app_name">openGym 简体中文版</string>
+  <string name="title_activity_main">openGym 简体中文版</string>
+  <string name="package_name">io.github.coney97.opengym.zh</string>
+  <string name="custom_url_scheme">opengymzh</string>
+  <string name="rest_countdown_channel_name">休息倒计时</string>
+  <string name="rest_channel_name">休息计时器</string>
+  <string name="rest_quiet_channel_name">休息计时器（无振动）</string>
+  <string name="rest_channel_desc">在通知栏显示组间休息。只有允许在锁屏显示通知时，锁屏才会显示。</string>
+  <string name="shortcut_start">开始训练</string>
+  <string name="shortcut_weigh">记录体重</string>
+  <string name="shortcut_stats">统计</string>
+  <string name="widget_beside">旁边显示（宽版小组件）</string>
+  <string name="widget_desc">选择显示连续训练周数、体重目标、本周训练、下次训练、个人纪录或训练量。</string>
+  <string name="widget_done">完成</string>
+  <string name="widget_empty">请先打开一次 openGym，以加载小组件内容。</string>
+  <string name="widget_kind_challenges">挑战</string>
+  <string name="widget_kind_next">下次训练</string>
+  <string name="widget_kind_records">个人纪录</string>
+  <string name="widget_kind_streak">连续训练周数</string>
+  <string name="widget_kind_volume">训练量</string>
+  <string name="widget_kind_week">本周</string>
+  <string name="widget_kind_weight">体重目标</string>
+  <string name="widget_name">openGym 简体中文版</string>
+  <string name="widget_what">显示内容</string>
+</resources>

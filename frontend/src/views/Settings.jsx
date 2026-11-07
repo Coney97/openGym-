@@ -1,3 +1,4 @@
+import { CHINESE_EDITION, CHINESE_CONFIG } from '../lib/chinese-edition.js'
 import { useEffect, useRef, useState, forwardRef, useSyncExternalStore } from 'react'
 import { useNavigate, useParams, useLocation, Navigate } from 'react-router-dom'
 import { useStore, DEF, hasData } from '../store/useStore.js'
@@ -1126,8 +1127,8 @@ export default function Settings({ page = null, find = null, via = null, entryKe
               accessory="chevron"
               onClick={() => (updateInfo?.hasUpdate ? onUpdateRowClick() : checkNow())} />
           : <Row icon="download" iconTint="var(--green)" title={t('Get the Android app')}
-              subtitle={t('Download the APK from opengym.ch')} accessory="chevron"
-              onClick={() => window.open('https://opengym.ch/#download', '_blank', 'noopener')} />}
+              subtitle={CHINESE_EDITION ? t('Download the Chinese APK from GitHub') : t('Download the APK from opengym.ch')} accessory="chevron"
+              onClick={() => window.open(CHINESE_EDITION ? `https://github.com/${CHINESE_CONFIG.repository}/releases` : 'https://opengym.ch/#download', '_blank', 'noopener')} />}
       </Section>
       {/* The F-Droid build has no Wear OS link (it would need Google Play services, which F-Droid
           leaves out): said here rather than having a watch that silently never connects. */}
@@ -1179,8 +1180,9 @@ export default function Settings({ page = null, find = null, via = null, entryKe
           which build you are running, or whether an update actually installed. */}
       <div className="dim small sp-version">
         openGym v{__APP_VERSION__} · {t('free & open source (AGPL v3)')}<br />
-        <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">{t('Source code')}</a><br />
+        <a href={CHINESE_EDITION ? `https://github.com/${CHINESE_CONFIG.repository}` : "https://github.com/DuarteSantos8/openGym"} target="_blank" rel="noopener">{t('Source code')}</a><br />
         {/* Attribution the media licence asks for word for word (agreement §8c), so it is not translated */}
+        {CHINESE_EDITION && <>{t('The following third-party attribution and legal notice are kept in their original language.')}<br /></>}
         Exercise media © Aliaksandr Makatserchyk, <a href="https://gymvisual.com/" target="_blank" rel="noopener">Gym visual</a>, gymvisual.com.
         Media licensed for use in openGym only; see <a href="https://github.com/DuarteSantos8/openGym/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE.md</a>
       </div>

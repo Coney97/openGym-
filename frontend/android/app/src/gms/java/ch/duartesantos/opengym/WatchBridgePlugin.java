@@ -121,7 +121,7 @@ public class WatchBridgePlugin extends Plugin {
     @PluginMethod
     public void sendSnapshot(PluginCall call) {
         String json = call.getString("json");
-        if (json == null) { call.reject("json is required"); return; }
+        if (json == null) { call.reject(NativeWords.get("json is required")); return; }
         try {
             PutDataMapRequest req = PutDataMapRequest.create(SNAPSHOT);
             req.getDataMap().putString("snapshot", json);

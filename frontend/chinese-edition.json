@@ -1,0 +1,9 @@
+{
+  "appId": "io.github.coney97.opengym.zh",
+  "appName": "openGym 简体中文版",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "scheme": "opengymzh",
+  "repository": "Coney97/openGym-",
+  "tagPrefix": "zh-CN-v"
+}

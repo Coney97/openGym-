@@ -83,8 +83,8 @@ function PackDetails({ figure }) {
     const out = []
     for (const id of ids) { out.push(await diagnose(id)); setRows([...out]) }
   }
-  return <Section title="Details">
-    <Row icon="info" title="Check the packs" subtitle="State, where they are read from, a sample drawing" accessory="chevron" onClick={run} />
+  return <Section title={t("Details")}>
+    <Row icon="info" title={t("Check the packs")} subtitle={t("State, where they are read from, a sample drawing")} accessory="chevron" onClick={run} />
     {rows && <pre className="small dim" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', userSelect: 'text', padding: '8px 12px', margin: 0 }}>
       {rows.length ? rows.map(r => JSON.stringify(r, null, 1)).join('\n\n') : '…'}
     </pre>}

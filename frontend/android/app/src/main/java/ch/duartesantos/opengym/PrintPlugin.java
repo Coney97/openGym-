@@ -34,7 +34,7 @@ public class PrintPlugin extends Plugin {
     public void printHtml(PluginCall call) {
         String html = call.getString("html");
         if (html == null || html.isEmpty()) {
-            call.reject("html is required");
+            call.reject(NativeWords.get("html is required"));
             return;
         }
         final String jobName = call.getString("name", "openGym");
@@ -54,7 +54,7 @@ public class PrintPlugin extends Plugin {
                             (PrintManager) getContext().getSystemService(Context.PRINT_SERVICE);
                     if (printManager == null) {
                         printView = null;
-                        call.reject("printing is not available on this device");
+                        call.reject(NativeWords.get("printing is not available on this device"));
                         return;
                     }
                     PrintDocumentAdapter adapter = view.createPrintDocumentAdapter(jobName);

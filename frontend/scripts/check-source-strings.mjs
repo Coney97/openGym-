@@ -11,7 +11,7 @@
 // Only literal single-argument calls are collected — t(variable) and template literals are
 // resolved at runtime and are deliberately out of scope.
 
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { readdirSync, readFileSync, statSync, existsSync } from 'node:fs'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 
@@ -24,7 +24,7 @@ function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
     const p = join(dir, name)
     if (statSync(p).isDirectory()) {
-      if (p === localesDir || name === 'instr' || name === 'node_modules') continue
+      if (p === localesDir || name === 'locales-extra' || name === 'instr' || name === 'node_modules') continue
       walk(p, out)
     } else if (/\.(js|jsx)$/.test(name) && !/\.test\.(js|jsx)$/.test(name)) {
       out.push(p)
@@ -51,6 +51,12 @@ const defined = new Set()
 for (const file of readdirSync(localesDir).filter(f => f.endsWith('.js'))) {
   const pack = (await import(pathToFileURL(join(localesDir, file)).href)).default
   for (const key of Object.keys(pack)) defined.add(key)
+}
+
+const extraFile = join(srcDir, 'locales-extra', 'zh.js')
+if (existsSync(extraFile)) {
+  const extra = (await import(pathToFileURL(extraFile).href)).default
+  for (const key of Object.keys(extra)) defined.add(key)
 }
 
 const missing = [...used.keys()].filter(k => !defined.has(k)).sort()

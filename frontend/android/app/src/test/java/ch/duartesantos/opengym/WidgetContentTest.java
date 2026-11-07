@@ -66,7 +66,7 @@ public class WidgetContentTest {
         assertEquals("challenges", c.kind);
         assertEquals("1 / 3", c.value);
         assertEquals("14 workouts this month · 7 / 14", c.caption);
-        assertEquals("Challenges", c.title);
+        assertEquals(BuildConfig.CHINESE_EDITION ? "挑战" : "Challenges", c.title);
         assertEquals("opengym://home", c.link);
         // Switched off in the app (no block): a dash, never a crash.
         JSONObject off = snap();

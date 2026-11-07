@@ -32,7 +32,7 @@ public class AnimationPacksPlugin extends Plugin {
 
     @PluginMethod
     public void download(PluginCall call) {
-        call.reject("asset packs are not available on Android yet", "unavailable");
+        call.reject(NativeWords.get("asset packs are not available on Android yet"), "unavailable");
     }
 
     @PluginMethod
@@ -42,6 +42,6 @@ public class AnimationPacksPlugin extends Plugin {
 
     @PluginMethod
     public void localPath(PluginCall call) {
-        call.reject("not downloaded", "unavailable");
+        call.reject(NativeWords.get("not downloaded"), "unavailable");
     }
 }

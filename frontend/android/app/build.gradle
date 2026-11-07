@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+def chineseEdition = project.findProperty('chineseEdition') == 'true'
+def chineseConfig = new groovy.json.JsonSlurper().parse(rootProject.file('../chinese-edition.json'))
+def chineseSigningPath = System.getenv('OPENGYM_ZH_SIGNING_PROPERTIES')
+def chineseSigning = new Properties()
+if (chineseEdition && chineseSigningPath) {
+    file(chineseSigningPath).withInputStream { chineseSigning.load(it) }
+}
+
 android {
     namespace = "ch.duartesantos.opengym"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -12,6 +20,13 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 31
         versionName "1.4.4"
+        buildConfigField 'boolean', 'CHINESE_EDITION', chineseEdition.toString()
+        manifestPlaceholders = [appLinkScheme: chineseEdition ? chineseConfig.scheme : 'opengym', verifyAppLinks: chineseEdition ? 'false' : 'true']
+        if (chineseEdition) {
+            applicationId = chineseConfig.appId
+            versionName = chineseConfig.versionName
+            versionCode = chineseConfig.versionCode
+        }
         if (project.hasProperty('betaVersionCode')) {
             versionCode = project.property('betaVersionCode').toString().toInteger()
         }
@@ -25,8 +40,20 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        chineseRelease {
+            if (chineseSigningPath) {
+                storeFile file(chineseSigning.getProperty('storeFile'))
+                storePassword chineseSigning.getProperty('storePassword')
+                keyAlias chineseSigning.getProperty('keyAlias')
+                keyPassword chineseSigning.getProperty('keyPassword')
+                storeType 'PKCS12'
+            }
+        }
+    }
     buildTypes {
         release {
+            if (chineseEdition && chineseSigningPath) signingConfig signingConfigs.chineseRelease
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             // The barcode scanner's ML Kit library ships a native build for four CPU families.
@@ -80,6 +107,7 @@ android {
     sourceSets {
         sideload.java.srcDirs += 'src/gms/java'
         play.java.srcDirs += 'src/gms/java'
+        if (chineseEdition) sideload.res.srcDirs += 'src/chinese/res'
     }
     // Plan B for Google Play's background-location review (docs/APP_STORES.md): with
     // -PplayWithoutBackgroundLocation the Play build leaves out ACCESS_BACKGROUND_LOCATION, so no
@@ -87,6 +115,12 @@ android {
     // BACKGROUND_LOCATION false, lib/channel.js). Off by default.
     if (project.hasProperty('playWithoutBackgroundLocation')) {
         sourceSets.play.manifest.srcFile 'src/playNoBackgroundLocation/AndroidManifest.xml'
+    }
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (chineseEdition && graph.allTasks.any { it.path.startsWith(':app:') && it.name.endsWith('Release') } && !chineseSigningPath) {
+        throw new GradleException('Set OPENGYM_ZH_SIGNING_PROPERTIES to the private signing configuration before building a Chinese release')
     }
 }
 

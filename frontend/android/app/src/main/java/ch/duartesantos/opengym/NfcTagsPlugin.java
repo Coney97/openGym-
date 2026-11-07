@@ -56,7 +56,7 @@ public class NfcTagsPlugin extends Plugin {
     static boolean isOurLink(Uri uri) {
         if (uri == null || uri.getScheme() == null) return false;
         String scheme = uri.getScheme().toLowerCase();
-        if (scheme.equals("opengym")) return true;
+        if (scheme.equals(BuildConfig.CHINESE_EDITION ? "opengymzh" : "opengym")) return true;
         if (!scheme.equals("https") && !scheme.equals("http")) return false;
         String host = uri.getHost() == null ? "" : uri.getHost().toLowerCase();
         if (host.startsWith("www.")) host = host.substring(4);
@@ -92,22 +92,22 @@ public class NfcTagsPlugin extends Plugin {
     public void write(PluginCall call) {
         String url = call.getString("url");
         if (url == null || url.isEmpty() || url.length() > 512) {
-            call.reject("url is required", "failed");
+            call.reject(NativeWords.get("url is required"), "failed");
             return;
         }
         NfcAdapter a = adapter();
         if (a == null) {
-            call.reject("this phone has no NFC", "unsupported");
+            call.reject(NativeWords.get("this phone has no NFC"), "unsupported");
             return;
         }
         if (!a.isEnabled()) {
-            call.reject("NFC is disabled", "disabled");
+            call.reject(NativeWords.get("NFC is disabled"), "disabled");
             return;
         }
         final NdefMessage message = new NdefMessage(new NdefRecord[] { NdefRecord.createUri(url) });
         Activity act = getActivity();
         act.runOnUiThread(() -> {
-            if (pending != null) pending.reject("replaced by a newer write", "cancelled");
+            if (pending != null) pending.reject(NativeWords.get("replaced by a newer write"), "cancelled");
             pending = call;
             int flags = NfcAdapter.FLAG_READER_NFC_A | NfcAdapter.FLAG_READER_NFC_B | NfcAdapter.FLAG_READER_NFC_F
                     | NfcAdapter.FLAG_READER_NFC_V | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS;
@@ -154,15 +154,15 @@ public class NfcTagsPlugin extends Plugin {
             if (ndef != null) {
                 ndef.connect();
                 try {
-                    if (!ndef.isWritable()) { code = "read-only"; why = "the sticker is read-only"; }
-                    else if (ndef.getMaxSize() < message.getByteArrayLength()) { code = "too-small"; why = "the sticker is too small"; }
+                    if (!ndef.isWritable()) { code = "read-only"; why = NativeWords.get("the sticker is read-only"); }
+                    else if (ndef.getMaxSize() < message.getByteArrayLength()) { code = "too-small"; why = NativeWords.get("the sticker is too small"); }
                     else ndef.writeNdefMessage(message);
                 } finally {
                     try { ndef.close(); } catch (IOException ignored) { /* gone already */ }
                 }
             } else {
                 NdefFormatable blank = NdefFormatable.get(tag);
-                if (blank == null) { code = "unsupported"; why = "the sticker cannot hold NDEF"; }
+                if (blank == null) { code = "unsupported"; why = NativeWords.get("the sticker cannot hold NDEF"); }
                 else {
                     blank.connect();
                     try { blank.format(message); }

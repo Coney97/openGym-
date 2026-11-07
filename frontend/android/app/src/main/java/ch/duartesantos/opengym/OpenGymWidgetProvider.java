@@ -199,7 +199,7 @@ public class OpenGymWidgetProvider extends AppWidgetProvider {
     static PendingIntent open(Context context, String link, int requestCode) {
         Intent i = new Intent(context, MainActivity.class)
                 .setAction(Intent.ACTION_VIEW)
-                .setData(Uri.parse(link))
+                .setData(Uri.parse(BuildConfig.CHINESE_EDITION ? link.replace("opengym://", "opengymzh://") : link))
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         return PendingIntent.getActivity(context, requestCode, i, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }

@@ -18,13 +18,14 @@
 // weigh-in link only fills the sheet in, saved by a tap on Save.
 import { MOBILE } from './mobile.js'
 import { parseSpokenWeight, convertWeight, weightInRange } from './voice.js'
+import { APP_SCHEME } from './chinese-edition.js'
 
-export const WIDGET_SCHEME = 'opengym'
+export const WIDGET_SCHEME = APP_SCHEME
 
 /** What a link asks for, or null for anything that is not one of ours. */
 export function parseWidgetLink (url) {
   if (typeof url !== 'string') return null
-  const m = /^opengym:\/\/([a-z-]+)\/?(?:\?(.*))?$/i.exec(url.trim())
+  const m = new RegExp(`^${WIDGET_SCHEME}:\\/\\/([a-z-]+)\\/?(?:\\?(.*))?$`, 'i').exec(url.trim())
   if (!m) return null
   const what = m[1].toLowerCase()
   const q = new URLSearchParams(m[2] || '')

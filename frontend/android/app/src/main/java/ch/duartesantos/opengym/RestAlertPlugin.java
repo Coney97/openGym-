@@ -64,27 +64,27 @@ public class RestAlertPlugin extends Plugin {
     public void schedule(PluginCall call) {
         Context ctx = getContext();
         if (ctx == null) {
-            call.reject("no context");
+            call.reject(NativeWords.get("no context"));
             return;
         }
         long at = number(call, "at", -1);
         if (at <= System.currentTimeMillis()) {
-            call.reject("at must be in the future");
+            call.reject(NativeWords.get("at must be in the future"));
             return;
         }
         RestAlert.setAccentColor((int) number(call, "accent", 0xFF30D158L), (int) number(call, "ink", 0xFF000000L));
         RestAlert.setLabels(
-                call.getString("pause", "Pause"),
-                call.getString("resume", "Resume"),
-                call.getString("minus", "\u2212 15s"),
-                call.getString("plus", "+ 15s"),
-                call.getString("skip", "Skip")
+                call.getString("pause", NativeWords.get("Pause")),
+                call.getString("resume", NativeWords.get("Resume")),
+                call.getString("minus", NativeWords.get("\u2212 15s")),
+                call.getString("plus", NativeWords.get("+ 15s")),
+                call.getString("skip", NativeWords.get("Skip"))
         );
         RestAlert.schedule(
                 ctx.getApplicationContext(),
                 at,
                 (int) number(call, "id", RestAlert.NOTIFICATION_ID),
-                call.getString("title", "Rest over"),
+                call.getString("title", NativeWords.get("Rest over")),
                 !Boolean.FALSE.equals(call.getBoolean("sound", Boolean.TRUE)),
                 // Settings → Sound (#306): the sound by name; a page from before it sends only `classic`.
                 call.getString("tone", Boolean.TRUE.equals(call.getBoolean("classic", Boolean.FALSE)) ? "classic" : "chime"),
@@ -94,7 +94,7 @@ public class RestAlertPlugin extends Plugin {
                 call.getString("visibility", "public"),
                 call.getString("importance", "high"),
                 Boolean.TRUE.equals(call.getBoolean("localOnly", Boolean.FALSE)),
-                call.getString("countdownTitle", "Rest"),
+                call.getString("countdownTitle", NativeWords.get("Rest")),
                 number(call, "totalMs", 0),
                 // Timed holds that run themselves: the alerts after this one, and whether this one
                 // shows the rest's countdown card (a count-in or a hold does not).
@@ -113,7 +113,7 @@ public class RestAlertPlugin extends Plugin {
     public void buzz(PluginCall call) {
         Context ctx = getContext();
         if (ctx == null) {
-            call.reject("no context");
+            call.reject(NativeWords.get("no context"));
             return;
         }
         long[] pattern = new long[] {0, 200, 100, 200};
@@ -137,7 +137,7 @@ public class RestAlertPlugin extends Plugin {
     public void tone(PluginCall call) {
         Context ctx = getContext();
         if (ctx == null) {
-            call.reject("no context");
+            call.reject(NativeWords.get("no context"));
             return;
         }
         RestAlert.playNow(ctx.getApplicationContext(), call.getString("kind", "chime"));
@@ -153,13 +153,13 @@ public class RestAlertPlugin extends Plugin {
         Context ctx = getContext();
         String text = call.getString("text", "");
         if (ctx == null || text == null || text.isEmpty()) {
-            call.reject("nothing to say");
+            call.reject(NativeWords.get("nothing to say"));
             return;
         }
         Double rate = call.getDouble("rate");
         boolean ok = SpeechCue.speak(ctx, text, call.getString("lang", ""), rate == null ? 1f : rate.floatValue(), Boolean.TRUE.equals(call.getBoolean("flush", false)));
         if (ok) call.resolve();
-        else call.reject("no voice");
+        else call.reject(NativeWords.get("no voice"));
     }
 
     @PluginMethod
@@ -172,7 +172,7 @@ public class RestAlertPlugin extends Plugin {
     public void cancel(PluginCall call) {
         Context ctx = getContext();
         if (ctx == null) {
-            call.reject("no context");
+            call.reject(NativeWords.get("no context"));
             return;
         }
         RestAlert.cancel(ctx.getApplicationContext(), (int) number(call, "id", RestAlert.NOTIFICATION_ID));
@@ -188,7 +188,7 @@ public class RestAlertPlugin extends Plugin {
     public void hold(PluginCall call) {
         Context ctx = getContext();
         if (ctx == null) {
-            call.reject("no context");
+            call.reject(NativeWords.get("no context"));
             return;
         }
         Context app = ctx.getApplicationContext();

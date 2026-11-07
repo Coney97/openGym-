@@ -86,7 +86,7 @@ public class GymReminderPlugin extends Plugin {
     public void configure(PluginCall call) {
         JSObject config = call.getObject("config");
         if (config == null) {
-            call.reject("config is required");
+            call.reject(NativeWords.get("config is required"));
             return;
         }
         GymReminder.saveConfig(getContext(), config);
@@ -206,12 +206,12 @@ public class GymReminderPlugin extends Plugin {
     public void currentPosition(PluginCall call) {
         Context ctx = getContext();
         if (!GymReminder.hasFine(ctx)) {
-            call.reject("location not allowed");
+            call.reject(NativeWords.get("location not allowed"));
             return;
         }
         LocationManager lm = (LocationManager) ctx.getSystemService(Context.LOCATION_SERVICE);
         if (lm == null) {
-            call.reject("no location service");
+            call.reject(NativeWords.get("no location service"));
             return;
         }
         String provider = null;
@@ -222,7 +222,7 @@ public class GymReminderPlugin extends Plugin {
             }
         }
         if (provider == null) {
-            call.reject("location is switched off");
+            call.reject(NativeWords.get("location is switched off"));
             return;
         }
         AtomicBoolean done = new AtomicBoolean(false);
@@ -232,7 +232,7 @@ public class GymReminderPlugin extends Plugin {
             if (done.getAndSet(true)) return;
             Location last = lastKnown(lm);
             if (last != null && System.currentTimeMillis() - last.getTime() < 10 * 60_000L) answer(call, last);
-            else call.reject("no fix");
+            else call.reject(NativeWords.get("no fix"));
         };
         try {
             if (Build.VERSION.SDK_INT >= 30) {
@@ -269,7 +269,7 @@ public class GymReminderPlugin extends Plugin {
                 main.postDelayed(fallback, 25_000);
             }
         } catch (SecurityException e) {
-            call.reject("location not allowed");
+            call.reject(NativeWords.get("location not allowed"));
         }
     }
 

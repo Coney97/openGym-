@@ -24,7 +24,7 @@ public class NudgeCheckPlugin extends Plugin {
     public void arm(PluginCall call) {
         String server = call.getString("server");
         if (server == null || server.isEmpty()) {
-            call.reject("server is required");
+            call.reject(NativeWords.get("server is required"));
             return;
         }
         try {
@@ -32,13 +32,13 @@ public class NudgeCheckPlugin extends Plugin {
             JSArray entries = call.getArray("entries", new JSArray());
             JSONObject config = new JSONObject().put("server", server).put("headers", headers).put("entries", entries);
             if (!NudgeCheck.save(getContext(), config)) {
-                call.reject("could not keep the check");
+                call.reject(NativeWords.get("could not keep the check"));
                 return;
             }
             NudgeCheck.schedule(getContext(), config);
             call.resolve();
         } catch (Exception e) {
-            call.reject("could not keep the check", e);
+            call.reject(NativeWords.get("could not keep the check"), e);
         }
     }
 

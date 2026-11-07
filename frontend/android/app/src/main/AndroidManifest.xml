@@ -7,6 +7,7 @@
          "unsupported" before touching the library. -->
     <uses-sdk tools:overrideLibrary="androidx.health.connect.client" />
     <application
+        android:name=".ChineseApplication"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -31,10 +32,15 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="https" android:host="opengym.ch" android:pathPrefix="/nfc" />
             </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="${appLinkScheme}" />
+            </intent-filter>
             <!-- A friend's routine link, https://opengym.ch/r#<routine> (components/RoutineShare.jsx):
                  straight into the app instead of the page. Verified once opengym.ch serves
                  /.well-known/assetlinks.json for this app; until then Android may ask which app. -->
-            <intent-filter android:autoVerify="true">
+            <intent-filter android:autoVerify="${verifyAppLinks}">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -47,7 +53,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="opengym" />
+                <data android:scheme="${appLinkScheme}" />
             </intent-filter>
         </activity>
 

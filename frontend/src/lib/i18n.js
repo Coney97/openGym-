@@ -68,11 +68,13 @@ export async function setLang(l, showEn, enOnly) {
   // The three packs are fetched side by side: one after the other, a start in any language but
   // English waited three round trips before Home could draw.
   const pack = async (packs, key, fallback) => { try { return (await packs[key]()).default } catch (e) { return fallback } }
-  const [dict, instr, exerciseNames] = await Promise.all([
+  const [baseDict, instr, exerciseNames, extra] = await Promise.all([
     base === 'en' ? {} : pack(localePacks, '../locales/' + base + '.js', {}),
     base === 'en' || !INSTR_LANGS.includes(base) ? null : pack(instrPacks, '../instr/' + base + '.js', null),
     base === 'en' || !EXERCISE_NAME_LANGS.includes(base) ? null : pack(exerciseNamePacks, '../exercise-names/' + base + '.js', null),
+    base === 'zh' ? import('../locales-extra/zh.js').then(m => m.default) : {},
   ])
+  const dict = { ...baseDict, ...extra }
   _setLangState(l, derivePack(l, dict), derivePack(l, instr), derivePack(l, exerciseNames), show, only)
   if (detailsLoaded) loadDetails()
   document.documentElement.lang = l

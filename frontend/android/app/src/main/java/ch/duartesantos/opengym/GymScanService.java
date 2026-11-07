@@ -177,7 +177,7 @@ public class GymScanService extends Service implements LocationListener {
     private static Notification notification(Context ctx) {
         JSONObject st = GymReminder.status(ctx);
         String text = st.optString("scan", "");
-        if (text.isEmpty()) text = "Checking if you made it to the gym";
+        if (text.isEmpty()) text = NativeWords.get("Checking if you made it to the gym");
         NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= 26 && nm != null) {
             NotificationChannel ch = nm.getNotificationChannel(CHANNEL_ID);

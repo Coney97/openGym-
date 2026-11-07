@@ -76,7 +76,7 @@ public class BackupFolderPlugin extends Plugin {
         try {
             getContext().getContentResolver().takePersistableUriPermission(tree, RW);
         } catch (SecurityException e) {
-            call.reject("this folder cannot be kept for later writes", e);
+            call.reject(NativeWords.get("this folder cannot be kept for later writes"), e);
             return;
         }
         JSObject ret = new JSObject();
@@ -99,16 +99,16 @@ public class BackupFolderPlugin extends Plugin {
         String name = call.getString("name");
         String data = call.getString("data");
         if (uri == null || name == null || data == null) {
-            call.reject("uri, name and data are required");
+            call.reject(NativeWords.get("uri, name and data are required"));
             return;
         }
         if (!BACKUP_NAME.matcher(name).matches()) {
-            call.reject("not a backup file name");
+            call.reject(NativeWords.get("not a backup file name"));
             return;
         }
         Uri tree = Uri.parse(uri);
         if (!held(tree)) {
-            call.reject("this folder is not one the app may write to");
+            call.reject(NativeWords.get("this folder is not one the app may write to"));
             return;
         }
         io.execute(() -> {
@@ -116,17 +116,17 @@ public class BackupFolderPlugin extends Plugin {
                 ContentResolver cr = getContext().getContentResolver();
                 Uri doc = childNamed(tree, name);
                 if (doc == null) doc = DocumentsContract.createDocument(cr, root(tree), "application/json", name);
-                if (doc == null) throw new IllegalStateException("the folder refused a new file");
+                if (doc == null) throw new IllegalStateException(NativeWords.get("the folder refused a new file"));
                 // "wt": truncate, so a shorter copy does not keep the tail of a longer one.
                 try (OutputStream out = cr.openOutputStream(doc, "wt")) {
-                    if (out == null) throw new IllegalStateException("the file cannot be opened for writing");
+                    if (out == null) throw new IllegalStateException(NativeWords.get("the file cannot be opened for writing"));
                     out.write(data.getBytes(StandardCharsets.UTF_8));
                 }
                 JSObject ret = new JSObject();
                 ret.put("ok", true);
                 call.resolve(ret);
             } catch (Exception e) {
-                call.reject("could not write to the backup folder: " + e.getMessage(), e);
+                call.reject(NativeWords.get("could not write to the backup folder: ") + e.getMessage(), e);
             }
         });
     }
@@ -138,12 +138,12 @@ public class BackupFolderPlugin extends Plugin {
         String written = call.getString("written", "");
         int keep = call.getInt("keep", 14);
         if (uri == null || pattern == null || keep < 1) {
-            call.reject("uri, pattern and keep are required");
+            call.reject(NativeWords.get("uri, pattern and keep are required"));
             return;
         }
         Uri tree = Uri.parse(uri);
         if (!held(tree)) {
-            call.reject("this folder is not one the app may write to");
+            call.reject(NativeWords.get("this folder is not one the app may write to"));
             return;
         }
         io.execute(() -> {

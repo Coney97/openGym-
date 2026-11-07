@@ -350,8 +350,8 @@ final class GymReminder {
         }
         String title = st.optString("title", "");
         String body = gym != null && !gym.optString("text", "").trim().isEmpty() ? gym.optString("text") : st.optString("body", "");
-        if (title.isEmpty()) title = "Gym spotted";
-        if (body.isEmpty()) body = "Ready for your workout? 💪";
+        if (title.isEmpty()) title = NativeWords.get("Gym spotted");
+        if (body.isEmpty()) body = NativeWords.get("Ready for your workout? 💪");
         if (!post(ctx, title, body, st.optString("channel", ""))) return false;
         p.edit().putString("lastFired", GymReminderRules.isoOf(now)).apply();
         note(ctx, "at " + gymId + ": posted");
@@ -439,7 +439,7 @@ final class GymReminder {
         NotificationManager nm = (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm == null || !nm.areNotificationsEnabled()) return false;
         if (Build.VERSION.SDK_INT >= 26 && nm.getNotificationChannel(CHANNEL_ID) == null) {
-            NotificationChannel ch = new NotificationChannel(CHANNEL_ID, channelName.isEmpty() ? "Gym reminder" : channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel ch = new NotificationChannel(CHANNEL_ID, channelName.isEmpty() ? NativeWords.get("Gym reminder") : channelName, NotificationManager.IMPORTANCE_DEFAULT);
             nm.createNotificationChannel(ch);
         }
         Intent open = new Intent(ctx, MainActivity.class).setAction(actionOpen(ctx));

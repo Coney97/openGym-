@@ -49,10 +49,10 @@ public class DeviceAuthPlugin extends Plugin {
     public void verify(PluginCall call) {
         KeyguardManager km = keyguard();
         if (km == null || !km.isDeviceSecure()) {
-            call.reject("no screen lock", "not-secure");
+            call.reject(NativeWords.get("no screen lock"), "not-secure");
             return;
         }
-        String reason = call.getString("reason", "Confirm it's you");
+        String reason = call.getString("reason", NativeWords.get("Confirm it's you"));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             getActivity().runOnUiThread(() -> prompt(call, reason));
             return;
@@ -60,7 +60,7 @@ public class DeviceAuthPlugin extends Plugin {
         // Android 7 to 9: BiometricPrompt cannot fall back to the PIN there, the lock screen can.
         Intent intent = km.createConfirmDeviceCredentialIntent(reason, null);
         if (intent == null) {
-            call.reject("no screen lock", "not-secure");
+            call.reject(NativeWords.get("no screen lock"), "not-secure");
             return;
         }
         startActivityForResult(call, intent, "confirmResult");
@@ -70,7 +70,7 @@ public class DeviceAuthPlugin extends Plugin {
     private void confirmResult(PluginCall call, ActivityResult result) {
         if (call == null) return;
         if (result.getResultCode() == Activity.RESULT_OK) resolveVerified(call);
-        else call.reject("cancelled", "cancelled");
+        else call.reject(NativeWords.get("cancelled"), "cancelled");
     }
 
     @SuppressWarnings("deprecation")   // setDeviceCredentialAllowed: the only way on Android 10
@@ -100,10 +100,10 @@ public class DeviceAuthPlugin extends Plugin {
                 switch (code) {
                     case BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED:
                     case BiometricPrompt.BIOMETRIC_ERROR_CANCELED:
-                        call.reject("cancelled", "cancelled");
+                        call.reject(NativeWords.get("cancelled"), "cancelled");
                         break;
                     case BiometricPrompt.BIOMETRIC_ERROR_NO_DEVICE_CREDENTIAL:
-                        call.reject("no screen lock", "not-secure");
+                        call.reject(NativeWords.get("no screen lock"), "not-secure");
                         break;
                     default:
                         call.reject(message != null ? message.toString() : "failed", "failed");

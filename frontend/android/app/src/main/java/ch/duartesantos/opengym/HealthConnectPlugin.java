@@ -163,7 +163,7 @@ public class HealthConnectPlugin extends Plugin {
     @PluginMethod
     public void requestPermissions(PluginCall call) {
         if (!"available".equals(sdkStatus())) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         Set<String> asked;
@@ -203,7 +203,7 @@ public class HealthConnectPlugin extends Plugin {
     @PluginMethod
     public void write(PluginCall call) {
         if (!"available".equals(sdkStatus())) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         JSArray sessions = call.getArray("sessions", new JSArray());
@@ -230,7 +230,7 @@ public class HealthConnectPlugin extends Plugin {
     @PluginMethod
     public void remove(PluginCall call) {
         if (!"available".equals(sdkStatus())) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         JSArray sessions = call.getArray("sessions", new JSArray());
@@ -251,12 +251,12 @@ public class HealthConnectPlugin extends Plugin {
     @PluginMethod
     public void readHeartRate(PluginCall call) {
         if (!"available".equals(sdkStatus())) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         Long from = millis(call, "from"), to = millis(call, "to");
         if (from == null || to == null || to <= from) {
-            call.reject("from and to are needed", "failed");
+            call.reject(NativeWords.get("from and to are needed"), "failed");
             return;
         }
         worker.execute(() -> {
@@ -282,12 +282,12 @@ public class HealthConnectPlugin extends Plugin {
     @PluginMethod
     public void readWeights(PluginCall call) {
         if (!"available".equals(sdkStatus())) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         Long since = millis(call, "since");
         if (since == null) {
-            call.reject("since is needed", "failed");
+            call.reject(NativeWords.get("since is needed"), "failed");
             return;
         }
         worker.execute(() -> {
@@ -368,7 +368,7 @@ public class HealthConnectPlugin extends Plugin {
     public void openSettings(PluginCall call) {
         String status = sdkStatus();
         if ("unsupported".equals(status)) {
-            call.reject("Health Connect is not available", "unavailable");
+            call.reject(NativeWords.get("Health Connect is not available"), "unavailable");
             return;
         }
         try {

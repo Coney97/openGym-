@@ -17,10 +17,11 @@
 // Only our own stickers: nothing here reads, copies or emulates a gym's access card.
 import { effectiveRoutineIds, effectiveRoutines } from './history.js'
 import { canonicalExId } from './exercises.js'
+import { APP_SCHEME, CHINESE_EDITION } from './chinese-edition.js'
 
 export const TAG_HOST = 'opengym.ch'
 export const TAG_PATH = '/nfc'
-export const SCHEME = 'opengym'
+export const SCHEME = APP_SCHEME
 const ID_RE = /^[A-Za-z0-9_-]{1,64}$/
 const cleanId = v => (typeof v === 'string' && ID_RE.test(v) ? v : null)
 
@@ -38,7 +39,7 @@ export function tagUrl(tag) {
   } else {
     throw new Error('unknown tag')
   }
-  return `https://${TAG_HOST}${TAG_PATH}?${q}`
+  return CHINESE_EDITION ? `${SCHEME}://nfc?${q}` : `https://${TAG_HOST}${TAG_PATH}?${q}`
 }
 
 const fromQuery = q => {

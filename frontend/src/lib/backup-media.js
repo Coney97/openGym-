@@ -25,11 +25,20 @@ import { mediaStore } from './media-store.js'
 import { setVideosOf } from './set-videos.js'
 import { DEFAULT_LIMITS, MB } from './media-limits.js'
 import { t } from './i18n-core.js'
+import { CHINESE_EDITION } from './chinese-edition.js'
 
 export const BACKUP_JSON = 'opengym-backup.json'
 const MEDIA_ENTRY = /^media\/([0-9a-f]{64})\.(jpg|png|webp|gif|mp4|mov|webm)$/
 
-const README = `openGym backup with photos and videos
+const README = CHINESE_EDITION ? `openGym 含照片和视频的备份
+
+opengym-backup.json：训练数据，与“导出备份（JSON）”生成的数据格式相同。
+media/：自定义动作和训练记录中的照片、动图、视频及预览图，文件名使用 SHA-256。
+
+恢复方法：打开 openGym → 设置 → 数据与备份 → 导入备份，直接选择此 ZIP 文件。
+请不要解压后重新压缩：应用读取的是以存储方式打包、未压缩的 ZIP 备份。
+从 Beta 迁移时，先在 Beta 导出，再在独立简体中文版中导入；保留原始备份。
+` : `openGym backup with photos and videos
 =====================================
 
 opengym-backup.json  your data - the same file "Export backup (JSON)" writes.

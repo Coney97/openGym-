@@ -6,6 +6,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { lazyAssets, stampSw } from './scripts/sw-stamp.mjs'
 import { mobileViewport } from './src/lib/viewport-zoom.js'
+import { chineseHtml } from './scripts/chinese-html.mjs'
 
 const backend = process.env.API_TARGET || 'http://127.0.0.1:3000'
 // The API refuses a state-changing request that a browser sent from anywhere other than its own
@@ -86,7 +87,8 @@ const swStamp = {
 const flavor = {
   name: 'opengym-flavor',
   transformIndexHtml(html) {
-    if (process.env.VITE_MOBILE !== '1') return
+    if (process.env.VITE_ZH_CN_EDITION === '1') html = chineseHtml(html)
+    if (process.env.VITE_MOBILE !== '1') return html
     return { html: mobileViewport(html), tags: [{ tag: 'meta', attrs: { name: 'opengym-flavor', content: 'mobile' }, injectTo: 'head' }] }
   }
 }
@@ -101,7 +103,10 @@ const flavor = {
 // answer from inside the app. Unset (the ordinary case, and every upstream build) it changes
 // nothing: the string is exactly package.json's version.
 const pkgVersion = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version
-const appVersion = process.env.APP_BUILD ? `${pkgVersion}+${process.env.APP_BUILD}` : pkgVersion
+const editionVersion = process.env.VITE_ZH_CN_EDITION === '1'
+  ? JSON.parse(readFileSync(new URL('./chinese-edition.json', import.meta.url), 'utf8')).versionName
+  : pkgVersion
+const appVersion = process.env.APP_BUILD ? `${editionVersion}+${process.env.APP_BUILD}` : editionVersion
 
 export default defineConfig({
   define: { __APP_VERSION__: JSON.stringify(appVersion) },

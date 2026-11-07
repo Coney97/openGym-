@@ -25,11 +25,11 @@ public class RestTimerService extends Service {
     private long pausedLeft;
     private boolean paused;
     private boolean running;
-    private String pauseLabel = "Pause";
-    private String resumeLabel = "Resume";
-    private String minusLabel = "\u2212 15s";
-    private String plusLabel = "+ 15s";
-    private String skipLabel = "Skip";
+    private String pauseLabel = NativeWords.get("Pause");
+    private String resumeLabel = NativeWords.get("Resume");
+    private String minusLabel = NativeWords.get("\u2212 15s");
+    private String plusLabel = NativeWords.get("+ 15s");
+    private String skipLabel = NativeWords.get("Skip");
     private int accent = 0xFF30D158;
     private int ink = 0xFF000000;
     private PowerManager.WakeLock cpu;

@@ -13,6 +13,10 @@ import com.getcapacitor.BridgeActivity;
 import com.getcapacitor.WebViewListener;
 
 public class MainActivity extends BridgeActivity {
+    @Override
+    protected void attachBaseContext(android.content.Context base) {
+        super.attachBaseContext(ChineseApplication.localized(base));
+    }
     // How much of the status bar (or the camera cutout) and of the navigation bar lies over the
     // page, in CSS pixels, as last passed to it; and the bars themselves in window pixels,
     // negative until the window has said.

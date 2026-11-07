@@ -3,6 +3,7 @@
 // sets VITE_APK_VARIANT with VITE_BUILTIN_CLIP_PX). lib/update.js updates each kind only to
 // itself; Settings → About shows which one a phone has. Its own module so the About page can read
 // it without the updater.
+import { CHINESE_EDITION } from './chinese-edition.js'
 import { BUILTIN_PX } from './anim-quality.js'
 
 const ENV = import.meta.env || {}
@@ -13,4 +14,4 @@ export const variantFor = (env, px = BUILTIN_PX) => APK_VARIANTS.includes(env)
   : (px >= 360 ? 'hd' : px > 180 ? 'plus' : 'standard')
 export const APK_VARIANT = variantFor(ENV.VITE_APK_VARIANT)
 /** The kind's name as the download page and the file names call it. */
-export const VARIANT_NAMES = { standard: 'Standard', plus: 'Plus', hd: 'HD' }
+export const VARIANT_NAMES = CHINESE_EDITION ? { standard: '标准版', plus: '增强版', hd: '高清版' } : { standard: 'Standard', plus: 'Plus', hd: 'HD' }

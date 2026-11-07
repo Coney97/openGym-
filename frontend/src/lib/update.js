@@ -11,10 +11,38 @@
 
 import { MOBILE } from './mobile.js'
 import { APK_VARIANTS, APK_VARIANT } from './apk-variant.js'
+import { CHINESE_EDITION, CHINESE_CONFIG } from './chinese-edition.js'
 
-const REPO = 'DuarteSantos8/openGym'
-const LATEST_URL = `https://api.github.com/repos/${REPO}/releases/latest`
-export const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`
+const REPO = CHINESE_EDITION ? CHINESE_CONFIG.repository : 'DuarteSantos8/openGym'
+const LATEST_URL = `https://api.github.com/repos/${REPO}/releases${CHINESE_EDITION ? '?per_page=100' : '/latest'}`
+export const RELEASES_PAGE = `https://github.com/${REPO}/releases${CHINESE_EDITION ? '' : '/latest'}`
+
+export function chineseReleaseVersion(tag) {
+  const prefix = CHINESE_CONFIG.tagPrefix
+  if (typeof tag !== 'string' || !tag.startsWith(prefix)) return null
+  const version = tag.slice(prefix.length)
+  return /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/.test(version) ? version : null
+}
+
+export function pickChineseRelease(releases) {
+  return (Array.isArray(releases) ? releases : [])
+    .filter(r => r && !r.draft && !r.prerelease && chineseReleaseVersion(r.tag_name))
+    .sort((a, b) => compareSemver(chineseReleaseVersion(b.tag_name), chineseReleaseVersion(a.tag_name)))[0] || null
+}
+
+export function pickChineseApk(assets, version) {
+  const name = `openGym-zh-CN-${version}-android.apk`
+  const safeUrl = value => {
+    try {
+      const url = new URL(value)
+      return url.protocol === 'https:' && url.hostname === 'github.com'
+        && url.pathname.startsWith(`/${CHINESE_CONFIG.repository}/releases/download/${CHINESE_CONFIG.tagPrefix}${version}/`)
+    } catch { return false }
+  }
+  const apk = assets.find(a => a.name === name && safeUrl(a.browser_download_url)) || null
+  const hash = apk ? assets.find(a => a.name === `${name}.sha256` && safeUrl(a.browser_download_url)) || null : null
+  return { apk: hash ? apk : null, hash }
+}
 
 /**
  * Compares two semver strings (e.g. "1.2.11" vs "1.3.0").
@@ -60,11 +88,12 @@ async function fetchLatest() {
   // 404: the repository has no published release yet
   if (res.status === 404) return { hasUpdate: false, latestVersion: __APP_VERSION__, apkUrl: null, hashUrl: null }
   if (!res.ok) throw new Error(`GitHub API ${res.status}`)
-  const latest = await res.json()
-  const latestVersion = String(latest.tag_name || '').replace(/^v/, '')
+  const data = await res.json()
+  const latest = CHINESE_EDITION ? pickChineseRelease(data) : data
+  const latestVersion = CHINESE_EDITION ? chineseReleaseVersion(latest?.tag_name) : String(latest.tag_name || '').replace(/^v/, '')
   if (!latestVersion) return { hasUpdate: false, latestVersion: __APP_VERSION__, apkUrl: null, hashUrl: null }
   const hasUpdate = compareSemver(latestVersion, __APP_VERSION__) > 0
-  const { apk, hash } = pickApk(latest.assets || [])
+  const { apk, hash } = CHINESE_EDITION ? pickChineseApk(latest.assets || [], latestVersion) : pickApk(latest.assets || [])
   return { hasUpdate, latestVersion, apkUrl: apk?.browser_download_url || null, hashUrl: hash?.browser_download_url || null }
 }
 

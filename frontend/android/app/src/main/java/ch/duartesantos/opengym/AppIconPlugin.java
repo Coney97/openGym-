@@ -47,7 +47,7 @@ public class AppIconPlugin extends Plugin {
     public void setIcon(PluginCall call) {
         String name = call.getString("name");
         if (AppIcons.aliasFor(name) == null) {
-            call.reject("unknown icon");
+            call.reject(NativeWords.get("unknown icon"));
             return;
         }
         // Picking the icon already on the home screen again just drops a pending switch.
@@ -81,7 +81,7 @@ public class AppIconPlugin extends Plugin {
                 pm.setComponentEnabledSetting(component(alias), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
             }
         } catch (RuntimeException e) {
-            Log.w(TAG, "could not switch the launcher icon", e);
+            Log.w(TAG, NativeWords.get("could not switch the launcher icon"), e);
         }
     }
 

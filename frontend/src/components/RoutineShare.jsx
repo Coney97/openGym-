@@ -77,6 +77,7 @@ function ShareRoutine({ routine, close }) {
     <h3>{t('Share with a friend')}</h3>
     <div className="dim small" style={{ marginBottom: 14, lineHeight: 1.4 }}>
       {t('A link to “{0}”. Your friend taps it and adds it to their own openGym. The routine rides inside the link, no server in between.', name)}
+      {import.meta.env.VITE_ZH_CN_EDITION === '1' && <p>{t('This link requires the Simplified Chinese edition. To share with the original app or Beta, export a plan file instead.')}</p>}
     </div>
     <div className="row between" style={{ padding: '10px 2px', borderTop: '1px solid var(--sep)', gap: 12 }}>
       <div><div className="tt" style={{ fontSize: 'var(--fs-subhead)' }}>{t('Include my weights')}</div><div className="small dim">{t('Off: just sets, reps and rest. They pick their own weights.')}</div></div>

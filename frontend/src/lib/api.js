@@ -1,5 +1,6 @@
 // Backend + WebAuthn helpers (ported from the vanilla app).
 import { t } from './i18n-core.js'
+import { visibleError } from './visible-error.js'
 import { MOBILE } from './mobile.js'
 import { appBase } from './app-base.js'
 import { nativeFetch } from './capacitor-fetch.js'
@@ -54,7 +55,7 @@ const failure = (message, code, status) => Object.assign(new Error(message), { c
 // what to change. The answer names ORIGIN, so the sentence can too (api/verify-error.js).
 function refusal(status, body) {
   if (body && body.code === 'origin-mismatch') return t('This server only takes changes made at {0}. If you opened openGym at another address, whoever runs the server can set ORIGIN and RP_ID to match it (the self-hosting guide shows how).', String(body.expected || '?'))
-  return (body && body.error) || ('HTTP ' + status)
+  return visibleError((body && body.error) || ('HTTP ' + status), status)
 }
 
 export async function api(path, opts) {

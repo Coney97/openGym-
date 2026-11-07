@@ -8,6 +8,7 @@ import subprocess
 import sys
 import importlib.util
 import zipfile
+import re
 
 spec = importlib.util.spec_from_file_location('translation_queue', Path(__file__).with_name('workflow.py'))
 m = importlib.util.module_from_spec(spec)
@@ -25,8 +26,16 @@ def main():
     q = m.Queue(args.root, args.state)
     report = q.scan()
     failures = []
+    active = sum(report['counts'].values())
+    if not active or not q.db.execute("SELECT COUNT(*) FROM tasks WHERE active=1 AND kind='catalogue'").fetchone()[0]:
+        failures.append('Translation inventory is empty')
     if any(count for status, count in report['counts'].items() if status != 'applied'):
-        failures.append('Catalogue translations are missing or lack recorded review/application')
+        failures.append('Translations are missing or lack recorded review/application')
+    for row in q.db.execute("SELECT * FROM tasks WHERE active=1 AND status='applied'"):
+        events = q.db.execute("SELECT detail FROM events WHERE key=? AND event='review' ORDER BY time DESC", (row['key'],)).fetchall()
+        if not any((event := json.loads(r[0])).get('approved') and event.get('source_hash') == row['hash']
+                   and event.get('target_hash') == m.digest(json.loads(row['target'])) and event.get('note') for r in events):
+            failures.append('Missing matching semantic review: ' + row['key'])
     subprocess.run(['node', str(Path(__file__).with_name('audit.mjs')), str(args.state)], check=True)
     audit = json.loads((args.state / 'audit.json').read_text())
     decisions_file = args.state / 'audit-decisions.json'
@@ -39,6 +48,21 @@ def main():
     if not args.apk.is_file():
         failures.append('APK does not exist')
     else:
+        edition = json.loads((args.root / 'frontend/chinese-edition.json').read_text())
+        cert = json.loads((args.root / 'frontend/chinese-release-certificate.json').read_text())
+        tools = Path('/workspace/android-sdk/build-tools/35.0.0')
+        try:
+            signing = subprocess.run([str(tools / 'apksigner'), 'verify', '--print-certs', str(args.apk)], check=True, capture_output=True, text=True).stdout
+            if cert['sha256'].lower() not in signing.lower():
+                failures.append('APK does not use the independent release certificate')
+            manifest = subprocess.run([str(tools / 'aapt'), 'dump', 'badging', str(args.apk)], check=True, capture_output=True, text=True).stdout
+            fields = dict(re.findall(r"(name|versionCode|versionName)='([^']+)'", manifest.splitlines()[0]))
+            if fields != {'name': edition['appId'], 'versionCode': str(edition['versionCode']), 'versionName': edition['versionName']}:
+                failures.append('APK package/version differs from Chinese edition configuration')
+            if 'application-debuggable' in manifest:
+                failures.append('Final APK must not be debuggable')
+        except (OSError, subprocess.CalledProcessError):
+            failures.append('Unable to verify APK signing and identity')
         try:
             with zipfile.ZipFile(args.apk) as apk:
                 stamp = json.loads(apk.read('assets/public/translation-build.json'))
@@ -51,10 +75,24 @@ def main():
         validation = json.loads(validation_file.read_text()) if validation_file.exists() else {}
         if validation.get('apk_sha256') != expected:
             failures.append('Acceptance record missing or refers to a different APK')
-        for check in ('frontend_suite', 'api_suite', 'mcp_suite', 'training_calculations', 'android_unit_tests', 'apk_signature', 'android_install_launch', 'android_chinese_screens', 'android_offline_workout', 'android_notifications'):
+        if validation.get('source_fingerprint') != proof.fingerprint(args.root):
+            failures.append('Acceptance record refers to different sources')
+        for check in ('frontend_suite', 'api_suite', 'mcp_suite', 'translation_queue_suite', 'training_calculations', 'android_unit_tests', 'apk_signature', 'android_install_launch', 'android_chinese_screens', 'android_offline_workout', 'android_saved_restart', 'android_notifications', 'android_backup_json_migration', 'android_backup_media_zip_migration'):
             result = validation.get('checks', {}).get(check, {})
             if result.get('status') != 'passed' or not result.get('evidence') or not result.get('reviewer'):
                 failures.append(f'Missing acceptance evidence: {check}')
+                continue
+            evidence = result['evidence']
+            if not isinstance(evidence, list):
+                failures.append(f'Evidence must include file hashes: {check}')
+                continue
+            for item in evidence:
+                file = Path(item.get('path', ''))
+                if not file.is_file() or hashlib.sha256(file.read_bytes()).hexdigest() != item.get('sha256'):
+                    failures.append(f'Missing or changed evidence file: {check}')
+            if check in ('frontend_suite', 'api_suite', 'mcp_suite', 'translation_queue_suite', 'training_calculations', 'android_unit_tests'):
+                if result.get('tests', 0) <= 0 or result.get('failures') != 0:
+                    failures.append(f'Incomplete or failed test execution: {check}')
     print(json.dumps({'ready': not failures, 'failures': failures, 'queue': report['counts']}, ensure_ascii=False, indent=2))
     return bool(failures)
 

@@ -17,7 +17,7 @@ public class WidgetBridgePlugin extends Plugin {
     public void write(PluginCall call) {
         String json = call.getString("json");
         if (json == null) {
-            call.reject("json is required");
+            call.reject(NativeWords.get("json is required"));
             return;
         }
         try {
@@ -25,7 +25,7 @@ public class WidgetBridgePlugin extends Plugin {
             OpenGymWidgetProvider.updateAll(getContext());
             call.resolve();
         } catch (Exception e) {
-            call.reject("could not write the widget data");
+            call.reject(NativeWords.get("could not write the widget data"));
         }
     }
 }

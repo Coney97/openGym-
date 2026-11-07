@@ -47,17 +47,17 @@ public final class RestAlert {
      * good and an end that must not buzz goes out on this channel, which never vibrates.
      */
     static final String QUIET_CHANNEL_ID = "rest-over-quiet";
-    private static String lastAlertTitle = "Rest over";
+    private static String lastAlertTitle = NativeWords.get("Rest over");
     private static boolean lastSound = true;
     private static String lastTone = "chime";
     private static boolean lastVibrate = true;
     private static boolean lastAlarmBuzz = false;
     private static String lastChannel = CHANNEL_ID;
-    private static String labPause = "Pause";
-    private static String labResume = "Resume";
-    private static String labMinus = "\u2212 15s";
-    private static String labPlus = "+ 15s";
-    private static String labSkip = "Skip";
+    private static String labPause = NativeWords.get("Pause");
+    private static String labResume = NativeWords.get("Resume");
+    private static String labMinus = NativeWords.get("\u2212 15s");
+    private static String labPlus = NativeWords.get("+ 15s");
+    private static String labSkip = NativeWords.get("Skip");
     // Timed holds that run themselves (lib/auto-holds.js): the alerts after this one, as JSON
     // [{ dt, title }], each dt in ms after this alert's own time. Empty: a plain rest.
     private static String lastCues = "";
@@ -128,7 +128,7 @@ public final class RestAlert {
             String posted = alarmBuzz ? QUIET_CHANNEL_ID : channelId;
             ensureChannel(ctx, nm, posted, importanceOf(importance), visibilityOf(visibility), !alarmBuzz && vibrate);
         }
-        lastAlertTitle = title == null ? "Rest over" : title;
+        lastAlertTitle = title == null ? NativeWords.get("Rest over") : title;
         lastSound = sound;
         lastTone = tone == null ? "chime" : tone;
         lastVibrate = vibrate;
@@ -328,7 +328,7 @@ public final class RestAlert {
     @SuppressWarnings("deprecation")
     private static boolean showNotification(Context ctx, Intent intent, boolean alarmBuzz) {
         String title = intent.getStringExtra("title");
-        if (title == null || title.isEmpty()) title = "Rest’s over. Next set!";
+        if (title == null || title.isEmpty()) title = NativeWords.get("Rest’s over. Next set!");
         // With the alarm buzz on, the notification itself stays still: the buzz comes from buzz().
         boolean vibrate = intent.getBooleanExtra("vibrate", true) && !alarmBuzz;
         String channelId = channelFor(intent.getStringExtra("channelId"), vibrate);
@@ -490,7 +490,7 @@ public final class RestAlert {
         Intent i = new Intent(ctx, RestTimerService.class);
         i.putExtra("endsAt", endsAt);
         i.putExtra("totalMs", totalMs);
-        i.putExtra("title", title == null || title.isEmpty() ? "Rest" : title);
+        i.putExtra("title", title == null || title.isEmpty() ? NativeWords.get("Rest") : title);
         i.putExtra("pause", labPause);
         i.putExtra("resume", labResume);
         i.putExtra("minus", labMinus);
