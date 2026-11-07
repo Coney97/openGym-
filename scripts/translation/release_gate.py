@@ -17,6 +17,15 @@ proof_spec = importlib.util.spec_from_file_location('stamp_build', Path(__file__
 proof = importlib.util.module_from_spec(proof_spec)
 proof_spec.loader.exec_module(proof)
 
+def package_matches(manifest, edition):
+    lines = manifest.splitlines()
+    if not lines or not lines[0].startswith('package: '):
+        return False
+    # Attribute names must start at a token boundary: compileSdkVersionCodename ends
+    # in "name", and must never replace the APK's actual package name.
+    fields = dict(re.findall(r"(?:^|\s)(name|versionCode|versionName)='([^']+)'", lines[0]))
+    return fields == {'name': edition['appId'], 'versionCode': str(edition['versionCode']), 'versionName': edition['versionName']}
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--state', type=Path, default=Path('/workspace/translation-state'))
@@ -56,8 +65,7 @@ def main():
             if cert['sha256'].lower() not in signing.lower():
                 failures.append('APK does not use the independent release certificate')
             manifest = subprocess.run([str(tools / 'aapt'), 'dump', 'badging', str(args.apk)], check=True, capture_output=True, text=True).stdout
-            fields = dict(re.findall(r"(name|versionCode|versionName)='([^']+)'", manifest.splitlines()[0]))
-            if fields != {'name': edition['appId'], 'versionCode': str(edition['versionCode']), 'versionName': edition['versionName']}:
+            if not package_matches(manifest, edition):
                 failures.append('APK package/version differs from Chinese edition configuration')
             if 'application-debuggable' in manifest:
                 failures.append('Final APK must not be debuggable')
