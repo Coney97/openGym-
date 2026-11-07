@@ -223,7 +223,7 @@ class Queue:
         rows = self.db.execute('SELECT * FROM tasks WHERE active=1 ORDER BY key')
         atomic_json(Path(output), [{**dict(row), 'target_hash': digest(json.loads(row['target'])) if row['target'] else None} for row in rows if not status or row['status'] == status])
 
-    def _review(self, key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical=False):
+    def _review(self, key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical=False, allow_format=False):
         row = self.db.execute('SELECT * FROM tasks WHERE key=? AND active=1', (key,)).fetchone()
         if not row or row['hash'] != expected_hash or not row['target']:
             raise ValueError('Missing translation or stale source hash')
@@ -241,16 +241,21 @@ class Queue:
         token = re.sub(r'\{\d+\}', '', source).strip() if isinstance(source, str) else ''
         if allow_technical and row['kind'] != 'catalogue' and source == target and token in terms:
             permitted.add('no_chinese')
+        formats = Path(__file__).with_name('reviewed-formats.json')
+        if allow_format and row['kind'] == 'ui' and isinstance(source, str) and formats.exists():
+            pair = json.loads(formats.read_text()).get(source)
+            if pair and target == pair['target']:
+                permitted.update(set(pair['flags']) & {'numbers_changed', 'no_chinese'})
         if approve and any(i not in permitted for i in issues):
             raise ValueError('Resolve structural checks before approval: ' + ', '.join(issues))
         if not reviewer.strip() or not note.strip():
             raise ValueError('Reviewer and review note required')
         self.db.execute('UPDATE tasks SET status=?, reviewer=?, issues=? WHERE key=?', ('approved' if approve else 'blocked', reviewer, encoded(issues), key))
-        self.event(key, 'review', {'source_hash': expected_hash, 'target_hash': expected_target_hash, 'reviewer': reviewer, 'approved': approve, 'note': note, 'retained_technical': allow_technical})
+        self.event(key, 'review', {'source_hash': expected_hash, 'target_hash': expected_target_hash, 'reviewer': reviewer, 'approved': approve, 'note': note, 'retained_technical': allow_technical, 'localized_format': allow_format})
 
-    def review(self, key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical=False):
+    def review(self, key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical=False, allow_format=False):
         with self.db:
-            self._review(key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical)
+            self._review(key, expected_hash, expected_target_hash, reviewer, approve, note, allow_technical, allow_format)
         self.report()
 
     def review_batch(self, reviews):
@@ -263,7 +268,7 @@ class Queue:
             for row in reviews:
                 if row['decision'] not in ('approve', 'reject'):
                     raise ValueError('Unknown decision')
-                self._review(row['key'], row['source_hash'], row['target_hash'], row['reviewer'], row['decision'] == 'approve', row['note'], row.get('allow_technical', False))
+                self._review(row['key'], row['source_hash'], row['target_hash'], row['reviewer'], row['decision'] == 'approve', row['note'], row.get('allow_technical', False), row.get('allow_format', False))
         self.report()
 
     def import_candidates(self, candidates):
@@ -460,6 +465,7 @@ def main():
     p.add_argument('--note', required=True)
     p.add_argument('--reject', action='store_true')
     p.add_argument('--allow-technical', action='store_true')
+    p.add_argument('--allow-format', action='store_true', help='Only exact reviewed UI format pairs; never catalogue numbers')
     args = parser.parse_args()
     queue = Queue(args.root, args.state)
     if args.command == 'scan':
@@ -475,7 +481,7 @@ def main():
     elif args.command == 'apply':
         print('Applied:', queue.apply())
     elif args.command == 'review':
-        queue.review(args.key, args.source_hash, args.target_hash, args.reviewer, not args.reject, args.note, args.allow_technical)
+        queue.review(args.key, args.source_hash, args.target_hash, args.reviewer, not args.reject, args.note, args.allow_technical, args.allow_format)
     elif args.command in ('run', 'start'):
         queue.scan()
         backend = Argos(args.model)  # Fail before starting a misleading idle background process.

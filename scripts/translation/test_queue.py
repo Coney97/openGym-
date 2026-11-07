@@ -239,6 +239,37 @@ m.run(q,Backend())
         self.q.scan()
         self.assertEqual(self.q.db.execute('SELECT status FROM tasks WHERE key=?', (key,)).fetchone()[0], 'applied')
 
+    def test_calendar_format_requires_explicit_review_of_the_exact_pair(self):
+        locale = self.root / 'frontend/src/locales/zh.js'
+        locale.parent.mkdir(parents=True)
+        locale.write_text('export default {"Jan":"1月"}')
+        self.q.scan()
+        row = self.q.db.execute('SELECT * FROM tasks WHERE key=?', ('ui:' + module.digest('Jan'),)).fetchone()
+        with self.assertRaises(ValueError):
+            self.approve(row)
+        self.q.review(row['key'], row['hash'], module.digest('1月'), 'calendar reviewer', True,
+                      'Jan names the first month; 1月 is the same calendar month.', allow_format=True)
+        self.assertEqual(self.q.db.execute('SELECT status FROM tasks WHERE key=?', (row['key'],)).fetchone()[0], 'approved')
+
+    def test_incorrect_month_or_placeholder_cannot_use_a_format_exception(self):
+        locale = self.root / 'frontend/src/locales/zh.js'
+        locale.parent.mkdir(parents=True)
+        locale.write_text('export default {"Jan":"2月", "{0} × {1} on {2}":"{2}：{0} × {0}"}')
+        self.q.scan()
+        for row in self.q.db.execute("SELECT * FROM tasks WHERE kind='ui'"):
+            with self.assertRaises(ValueError):
+                self.q.review(row['key'], row['hash'], module.digest(json.loads(row['target'])),
+                              'reviewer', True, 'Do not allow a changed month or lost placeholder.', allow_format=True)
+
+    def test_ui_format_exception_never_applies_to_catalogue_fields(self):
+        self.exercise['name'] = 'Jan'
+        self.file.write_text(json.dumps(self.exercise))
+        self.q.scan()
+        row = self.generated('0001:name', '1月')
+        with self.assertRaises(ValueError):
+            self.q.review(row['key'], row['hash'], module.digest('1月'), 'reviewer', True,
+                          'Catalogue numbers still require correction.', allow_format=True)
+
     def test_ui_and_native_use_same_review_and_conflict_rules(self):
         locale = self.root / 'frontend/src/locales/zh.js'
         locale.parent.mkdir(parents=True)

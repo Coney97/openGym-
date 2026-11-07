@@ -1,0 +1,156 @@
+{
+  "Jan": {
+    "target": "1月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Jan 是公历第1个月的英文简称；中文以1月表示，不是训练剂量或计算值变化。"
+  },
+  "Feb": {
+    "target": "2月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Feb 是公历第2个月的英文简称；中文以2月表示，不是训练剂量或计算值变化。"
+  },
+  "Mar": {
+    "target": "3月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Mar 是公历第3个月的英文简称；中文以3月表示，不是训练剂量或计算值变化。"
+  },
+  "Apr": {
+    "target": "4月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Apr 是公历第4个月的英文简称；中文以4月表示，不是训练剂量或计算值变化。"
+  },
+  "May": {
+    "target": "5月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "May 是公历第5个月的英文简称；中文以5月表示，不是训练剂量或计算值变化。"
+  },
+  "Jun": {
+    "target": "6月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Jun 是公历第6个月的英文简称；中文以6月表示，不是训练剂量或计算值变化。"
+  },
+  "Jul": {
+    "target": "7月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Jul 是公历第7个月的英文简称；中文以7月表示，不是训练剂量或计算值变化。"
+  },
+  "Aug": {
+    "target": "8月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Aug 是公历第8个月的英文简称；中文以8月表示，不是训练剂量或计算值变化。"
+  },
+  "Sep": {
+    "target": "9月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Sep 是公历第9个月的英文简称；中文以9月表示，不是训练剂量或计算值变化。"
+  },
+  "Oct": {
+    "target": "10月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Oct 是公历第10个月的英文简称；中文以10月表示，不是训练剂量或计算值变化。"
+  },
+  "Nov": {
+    "target": "11月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Nov 是公历第11个月的英文简称；中文以11月表示，不是训练剂量或计算值变化。"
+  },
+  "Dec": {
+    "target": "12月",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "Dec 是公历第12个月的英文简称；中文以12月表示，不是训练剂量或计算值变化。"
+  },
+  "5×5": {
+    "target": "5×5",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "5组5次训练体系的数字名称，保持原样。"
+  },
+  "0.5": {
+    "target": "0.5",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "重量进阶步长的数值示例，保持原值。"
+  },
+  "0.25": {
+    "target": "0.25",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "重量进阶步长的数值示例，保持原值。"
+  },
+  "{0} × {1} on {2}": {
+    "target": "{2}：{0} × {1}",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "实际参数依次为重量含单位、次数、日期；中文将日期前置并用冒号连接，不改三个占位符及数值。"
+  },
+  "{0} %": {
+    "target": "{0}%",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "百分比显示去除英文空格，保留数值占位符及百分号。"
+  },
+  "{0} MB": {
+    "target": "{0} MB",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "文件大小保留国际单位MB及原数值占位符。"
+  },
+  "{0} px": {
+    "target": "{0} px",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "像素尺寸保留单位px及原数值占位符。"
+  },
+  "{0} × {1}": {
+    "target": "{0} × {1}",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "重量与次数的乘式显示，保留两个占位符及乘号。"
+  },
+  "F": {
+    "target": "F",
+    "flags": [
+      "no_chinese"
+    ],
+    "reason": "力竭组的单字母训练标记，界面另有中文力竭说明，不是英语句子。"
+  },
+  "One notification on 1 December when your year is ready.": {
+    "target": "你的一年准备好时，12 月 1 日发一条通知。",
+    "flags": [
+      "numbers_changed"
+    ],
+    "reason": "December 对应12月，1对应1日；新增的12只是月份名称本地化，通知日期与源文一致。"
+  }
+}

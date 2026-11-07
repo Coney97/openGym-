@@ -57,6 +57,8 @@ node scripts/catalogue/build.mjs
 
 批量审核使用 `workflow.py review-batch <文件>`，每批最多100项，数组项包含 `key`、`source_hash`、`target_hash`、`reviewer`、`decision`（approve/reject）及具体 `note`。任何一项过期时整批回滚。原文自身有冲突时，必须先解决原文，不能通过更换译文或审核备注解除阻塞。
 
+英文月份名称转成中文数字月份（如 `Jan`→`1月`）属于界面格式转换。`reviewed-formats.json` 只登记准确的原文、译文对及其原因；审核人仍须逐项提交两份哈希、具体结论和 `allow_format: true`（单项命令为 `--allow-format`）。该选项只适用于登记的界面格式，不适用于动作字段；错误月份、损坏占位符、未登记的数字变化仍被阻止。不会因一段文字含有中文而批准。
+
 修正草稿时，准备 JSON 数组，每项为 `{"key":"动作编号:字段","source_hash":"导出的hash","target":"修正后的译文"}`；步骤字段的 `target` 是字符串数组。执行 `workflow.py import <文件>` 后回到 `generated`，必须重新审核。已存在译文可用同样方式纠正；仅当应用端仍与扫描时相同才会写入，期间用户的修改会阻止覆盖。
 
 `audit.json` 包含界面及 Android 原生候选。混合中英文、品牌、内部标识都可能出现，候选不等于实际漏洞；扫描也不能覆盖所有动态字符串。按候选的内容哈希建立 `audit-decisions.json`，仅对确认为应保留的术语填写 `{"候选id":{"action":"accept","reviewer":"审核人","reason":"保留原因"}}`。真正的遗漏应修正源码并重新扫描，而不是批量接受。
