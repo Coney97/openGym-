@@ -21,6 +21,6 @@
 
 ## 当前检查点
 
-实现与验证详情见 [执行状态](scripts/translation/IMPLEMENTATION_STATUS.zh-CN.md)，操作方式见 [云端翻译工作流](scripts/translation/README.zh-CN.md)。当前仍缺9667项动作字段，并有既有译文待审和两项英文姿势冲突；模型域名及 GitHub API/上传域名只在草稿中，实际规则尚未应用。软件 Android 镜像安装验收未通过，发布门槛仍关闭。
+实现与验证详情见 [执行状态](scripts/translation/IMPLEMENTATION_STATUS.zh-CN.md)，操作方式见 [云端翻译工作流](scripts/translation/README.zh-CN.md)。当前仍缺9667项动作字段，并有既有译文待审和两项英文姿势冲突；模型域名及 GitHub API/上传域名只在草稿中，实际规则尚未应用。软件 Android 镜像已能安装候选包，但应用与独立对照程序的WebView均崩溃，运行验收未通过，发布门槛仍关闭。
 
 批次、提交和测试构建用于恢复与审查，不作为任务完成或正式发布的替代。
