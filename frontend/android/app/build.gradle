@@ -62,6 +62,9 @@ android {
             // the APK. Release only: the debug build keeps x86_64 for the emulator test rig.
             ndk {
                 abiFilters 'arm64-v8a', 'armeabi-v7a'
+                // The Chinese APK is also exercised on the cloud x86_64 Android runtime.
+                // Include its native libraries so WebView does not run through ARM translation.
+                if (chineseEdition) abiFilters 'x86_64'
             }
         }
         debug {
