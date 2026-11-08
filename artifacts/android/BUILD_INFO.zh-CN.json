@@ -1,0 +1,41 @@
+{
+  "status": "signed_candidate",
+  "verified_at_utc": "2026-11-08T00:20:09.726191+00:00",
+  "source_commit": "dd391d28d9b7f936bb3836c372219f5c0699d0b1",
+  "source_fingerprint": "44f37e396190fcfc55ea0fb5b9117132b29c674c051c8c0f8dc247b547ab9821",
+  "apk": {
+    "filename": "openGym-zh-CN-1.0.0-candidate-20261108.apk",
+    "size_bytes": 229559865,
+    "sha256": "6f8960f22af0dc1a638ed2544283ea4b615d297d3c1894fedd5ff449d1a36a01",
+    "app_id": "io.github.coney97.opengym.zh",
+    "app_name": "openGym 简体中文版",
+    "version_name": "1.0.0",
+    "version_code": 1,
+    "certificate_sha256": "2fa29d2a3cb99a279e9ea6ba58975ffcde2df61a0ceddba30c9b66ca2dab08d3",
+    "abis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ]
+  },
+  "android_unit_tests": {
+    "tests": 50,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "build_log_sha256": "2a442321695623a9115a323ebe4361ef6601df1c55bd079c558b91f812b90780",
+  "localization_complete": false,
+  "android_runtime_acceptance_passed": false,
+  "limitations": [
+    "汉化和语义审校尚未全部完成。",
+    "云端模拟器此前发生系统 WebView 崩溃；原生启动和完整功能验收尚未通过。",
+    "本次没有上传 GitHub Releases。"
+  ],
+  "distribution_status": {
+    "github_repository_apk_uploaded": false,
+    "reason": "GitHub 拒绝公共 Fork 仓库新增 Git LFS 对象。",
+    "github_response": "@Coney97 can not upload new objects to public fork Coney97/openGym-",
+    "cloud_apk_available": true
+  }
+}

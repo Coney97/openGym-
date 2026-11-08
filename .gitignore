@@ -32,6 +32,9 @@ lcov.info
 /stats/
 frontend/bundle-size.json
 
+# Generated Android packages are distributed as release artifacts, not Git blobs.
+/artifacts/android/*.apk
+
 # Local planning notes
 docs/superpowers/plans/
 
