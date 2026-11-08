@@ -1,0 +1,32 @@
+{
+  "filename": "openGym-zh-CN-1.0.0-candidate-20261108.apk",
+  "size": 229559865,
+  "sha256": "6f8960f22af0dc1a638ed2544283ea4b615d297d3c1894fedd5ff449d1a36a01",
+  "parts": [
+    {
+      "name": "openGym-zh-CN.apk.part01",
+      "size": 50331648,
+      "sha256": "a2a43d76b7281d6ec3313fcbabc14b535e8de5d8db15b1415e60f4ad91f37623"
+    },
+    {
+      "name": "openGym-zh-CN.apk.part02",
+      "size": 50331648,
+      "sha256": "cfb600981c62cb2cb3b046d96976ee7cfc436a833650461b541448cbc4aaf01a"
+    },
+    {
+      "name": "openGym-zh-CN.apk.part03",
+      "size": 50331648,
+      "sha256": "a2eaf2188bddf14e9c8d444c692ef01fb0216a07d93caa85e694e347ee7517cc"
+    },
+    {
+      "name": "openGym-zh-CN.apk.part04",
+      "size": 50331648,
+      "sha256": "7f8165da8c9704931b7873bbe1c9b3f3a8bff7a4ad20562edb73240d25a73f5d"
+    },
+    {
+      "name": "openGym-zh-CN.apk.part05",
+      "size": 28233273,
+      "sha256": "89930228a3d832a32fe60c6cc2566785082cb00a99079e1dc11d67361a2f0a65"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>生成 openGym 安装包</title>
+<style>
+body{font:16px/1.7 system-ui,sans-serif;max-width:680px;margin:32px auto;padding:0 20px;color:#172923;background:#f6f9f7}h1{font-size:26px}main{background:white;padding:24px;border-radius:16px}button,.download{display:inline-block;background:#16704a;color:white;border:0;border-radius:9px;padding:12px 20px;font:inherit;text-decoration:none;margin:16px 0}button:disabled{background:#879d91}input{max-width:100%;margin:12px 0}progress{width:100%}[hidden]{display:none!important}.note{font-size:14px;color:#52655b}#status{overflow-wrap:anywhere}code{overflow-wrap:anywhere}
+</style>
+<main>
+<h1>生成 openGym 安装包</h1>
+<p>此页面完全离线运行，不会上传你的文件。它会校验下载包中的 5 个分片，并还原为原来的签名 APK。</p>
+<ol>
+<li>先解压下载的 ZIP 文件，保留所有文件。</li>
+<li>点击下面的选择框，一次选中 <code>part01</code> 至 <code>part05</code> 五个分片。若手机显示预览，请改用浏览器打开此页面。</li>
+<li>点击“校验并生成”，完成后点击“下载 APK 安装包”，再从系统下载目录打开 APK 安装。</li>
+</ol>
+<label for="parts">选择解压后的 5 个分片：</label><br>
+<input id="parts" type="file" multiple>
+<br><button id="make" type="button" disabled>校验并生成</button>
+<progress id="progress" value="0" max="5" aria-label="分片校验进度"></progress>
+<p id="status" role="status" aria-live="polite">尚未选择分片。</p>
+<a id="download" class="download" hidden>下载 APK 安装包</a>
+<p class="note">本包约 219 MiB，需要足够的存储空间。页面按固定顺序合并，并逐个检查分片的 SHA-256；选择顺序不会影响结果。</p>
+<p class="note">这是独立简体中文版的测试候选，版本 1.0.0、版本代码 1。完整汉化和 Android 原生运行验收尚未完成。安装前保留原应用和训练备份。</p>
+<p class="note">完整 APK 的 SHA-256：<code id="checksum"></code></p>
+</main>
+<script>
+'use strict';
+const manifest = {"filename": "openGym-zh-CN-1.0.0-candidate-20261108.apk", "size": 229559865, "sha256": "6f8960f22af0dc1a638ed2544283ea4b615d297d3c1894fedd5ff449d1a36a01", "parts": [{"name": "openGym-zh-CN.apk.part01", "size": 50331648, "sha256": "a2a43d76b7281d6ec3313fcbabc14b535e8de5d8db15b1415e60f4ad91f37623"}, {"name": "openGym-zh-CN.apk.part02", "size": 50331648, "sha256": "cfb600981c62cb2cb3b046d96976ee7cfc436a833650461b541448cbc4aaf01a"}, {"name": "openGym-zh-CN.apk.part03", "size": 50331648, "sha256": "a2eaf2188bddf14e9c8d444c692ef01fb0216a07d93caa85e694e347ee7517cc"}, {"name": "openGym-zh-CN.apk.part04", "size": 50331648, "sha256": "7f8165da8c9704931b7873bbe1c9b3f3a8bff7a4ad20562edb73240d25a73f5d"}, {"name": "openGym-zh-CN.apk.part05", "size": 28233273, "sha256": "89930228a3d832a32fe60c6cc2566785082cb00a99079e1dc11d67361a2f0a65"}]};
+const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+const rotr = (x,n) => (x>>>n)|(x<<(32-n));
+// Fallback for browsers which do not expose Web Crypto to a local file.
+function sha256Fallback(bytes) {
+  const size = Math.ceil((bytes.length+9)/64)*64;
+  const data = new Uint8Array(size);
+  data.set(bytes); data[bytes.length] = 128;
+  const view = new DataView(data.buffer);
+  view.setUint32(size-8,Math.floor(bytes.length/0x20000000));
+  view.setUint32(size-4,(bytes.length*8)>>>0);
+  const H = new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]);
+  const W = new Uint32Array(64);
+  for(let offset=0;offset<size;offset+=64) {
+    for(let t=0;t<16;t++) W[t]=view.getUint32(offset+t*4);
+    for(let t=16;t<64;t++) {
+      const x=W[t-15],y=W[t-2];
+      W[t]=(W[t-16]+(rotr(x,7)^rotr(x,18)^(x>>>3))+W[t-7]+(rotr(y,17)^rotr(y,19)^(y>>>10)))>>>0;
+    }
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let t=0;t<64;t++) {
+      const one=(h+(rotr(e,6)^rotr(e,11)^rotr(e,25))+((e&f)^(~e&g))+K[t]+W[t])>>>0;
+      const two=((rotr(a,2)^rotr(a,13)^rotr(a,22))+((a&b)^(a&c)^(b&c)))>>>0;
+      h=g;g=f;f=e;e=(d+one)>>>0;d=c;c=b;b=a;a=(one+two)>>>0;
+    }
+    for(const [i,n] of [a,b,c,d,e,f,g,h].entries()) H[i]=(H[i]+n)>>>0;
+  }
+  return Array.from(H,n=>n.toString(16).padStart(8,'0')).join('');
+}
+async function hashFile(file) {
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  if(globalThis.crypto?.subtle) {
+    const digest=await crypto.subtle.digest('SHA-256',bytes);
+    return Array.from(new Uint8Array(digest),n=>n.toString(16).padStart(2,'0')).join('');
+  }
+  return sha256Fallback(bytes);
+}
+class PackageError extends Error {}
+const input=document.getElementById('parts');
+const make=document.getElementById('make');
+const status=document.getElementById('status');
+const progress=document.getElementById('progress');
+const download=document.getElementById('download');
+let blobUrl=null;
+document.getElementById('checksum').textContent=manifest.sha256;
+function clearDownload() {
+  download.hidden=true;download.removeAttribute('href');
+  if(blobUrl) URL.revokeObjectURL(blobUrl);
+  blobUrl=null;
+}
+input.addEventListener('change',()=>{
+  clearDownload();progress.value=0;
+  const names=new Set(Array.from(input.files,f=>f.name));
+  const missing=manifest.parts.filter(p=>!names.has(p.name));
+  make.disabled=missing.length>0;
+  status.textContent=missing.length ? '还缺少分片：'+missing.map(p=>p.name).join('、') : '5 个分片已选齐，可以开始校验。';
+});
+make.addEventListener('click',async()=>{
+  clearDownload();make.disabled=true;input.disabled=true;progress.value=0;
+  try {
+    const files=new Map(Array.from(input.files,f=>[f.name,f]));
+    const ordered=[];
+    for(const [i,part] of manifest.parts.entries()) {
+      const file=files.get(part.name);
+      if(!file || file.size!==part.size) throw new PackageError('分片缺失或大小不符，请重新下载并解压：'+part.name);
+      status.textContent='正在校验第 '+(i+1)+' / '+manifest.parts.length+' 个分片，请保持页面打开……';
+      await new Promise(resolve=>setTimeout(resolve,0));
+      if(await hashFile(file)!==part.sha256) throw new PackageError('分片校验失败，请重新下载：'+part.name);
+      ordered.push(file);progress.value=i+1;
+    }
+    const blob=new Blob(ordered,{type:'application/vnd.android.package-archive'});
+    if(blob.size!==manifest.size) throw new PackageError('生成的安装包大小不符，请重新选择分片。');
+    blobUrl=URL.createObjectURL(blob);
+    download.href=blobUrl;download.download=manifest.filename;download.hidden=false;
+    status.textContent='全部分片校验通过，APK 已生成。请点击下面的下载按钮。';
+  } catch(error) {
+    clearDownload();
+    status.textContent=error instanceof PackageError ? error.message : '无法读取或生成文件，请检查剩余存储空间，用浏览器重新打开此页面并选择分片。';
+  } finally {input.disabled=false;make.disabled=false;}
+});
+</script>
+</html>
