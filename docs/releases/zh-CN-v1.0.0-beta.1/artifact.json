@@ -1,0 +1,18 @@
+{
+  "releaseTag": "zh-CN-v1.0.0-beta.1",
+  "releaseStatus": "prepared_not_published",
+  "prerelease": true,
+  "sourceCommit": "2db6fb778dabffebbd32c2ca53bb827a7d6e27b3",
+  "sourceFingerprint": "44f37e396190fcfc55ea0fb5b9117132b29c674c051c8c0f8dc247b547ab9821",
+  "apk": {
+    "filename": "openGym-zh-CN-1.0.0-candidate.apk",
+    "sizeBytes": 229559865,
+    "sha256": "8ebfe84d6885db8b23f60d4e945a23a7247913ba74d1d75c0efebfa19e407ec3",
+    "applicationId": "io.github.coney97.opengym.zh",
+    "versionName": "1.0.0",
+    "versionCode": 1,
+    "signingCertificateSha256": "2fa29d2a3cb99a279e9ea6ba58975ffcde2df61a0ceddba30c9b66ca2dab08d3"
+  },
+  "localizationComplete": false,
+  "androidRuntimeAcceptancePassed": false
+}
