@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "verified_at_utc": "2026-11-08T00:46:48.210669+00:00",
+  "url": "https://github.com/Coney97/openGym-/archive/7aaae66a4f11259fff3a622d1da4b824204f650b.zip",
+  "http_status": 200,
+  "download_branch": "apk-download-20261108",
+  "download_commit": "7aaae66a4f11259fff3a622d1da4b824204f650b",
+  "zip_bytes": 209943235,
+  "zip_sha256": "db56b7dd04144ea23c30b77789eab558de4fe276a031c9e218240130aa57ddc9",
+  "part_hashes_matched": 5,
+  "restored_apk_bytes": 229559865,
+  "restored_apk_sha256": "6f8960f22af0dc1a638ed2544283ea4b615d297d3c1894fedd5ff449d1a36a01",
+  "independent_apk_signature_verified": true,
+  "offline_html_matches_browser_tested_copy": true,
+  "actual_android_local_html_open_tested": false
+}

